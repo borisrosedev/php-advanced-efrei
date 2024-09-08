@@ -1,0 +1,3322 @@
+= Jour 1 : 
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
+
+
+Révision des concepts fondamentaux et avancés de PHP
+
+== Objectifs de la session :
+
+Revoir les concepts clés du développement PHP procédural et orienté objet.
+
+=== ...
+
+Appréhender les techniques avancées pour structurer et améliorer la qualité du code.
+
+=== ...
+
+Comprendre comment implémenter des design patterns classiques en PHP.
+
+//-----------------------------------------------------------------------
+
+== Classe et objet : 
+
+Explication des concepts de base, en soulignant les bonnes pratiques pour l'initialisation des objets.
+
+=== ...
+
+L'initialisation des objets est une étape fondamentale en programmation orientée objet (POO) car elle permet de créer des instances d'une classe avec des valeurs initiales spécifiques. 
+
+== Concepts de base :
+
+== Classe et Objet :
+
+=== Classe : 
+
+Une classe est un modèle ou un plan à partir duquel des objets sont créés. 
+
+Elle définit les attributs (propriétés) et les comportements (méthodes) d'un objet.
+
+
+=== Objet : 
+
+Un objet est une instance d'une classe. 
+
+=== ...
+
+Lorsqu'un objet est créé, il contient les données définies par les propriétés et peut exécuter les actions définies par les méthodes de la classe.
+
+
+=== Exemple basique d'une classe et d'un objet en PHP :
+
+[source, php]
+----
+class Car {
+    public $brand;
+    public $model;
+
+    public function start() {
+        echo "La voiture démarre.";
+    }
+}
+
+// Création d'un objet
+$myCar = new Car();
+
+$myCar->brand = "Toyota";
+
+$myCar->model = "Corolla";
+
+$myCar->start(); // Affichera : "La voiture démarre."
+----
+
+== Constructeur : 
+
+Le constructeur est une méthode spéciale d'une classe qui est appelée automatiquement lors de la création d'un objet. 
+
+=== ...
+
+En PHP, il est défini avec le mot-clé __construct(). 
+
+=== ...
+
+Il permet d'initialiser les propriétés de l'objet au moment où celui-ci est créé.
+
+
+=== Exemple d'utilisation d'un constructeur :
+
+[source, php]
+----
+class Car {
+    public $brand;
+    public $model;
+
+    // Constructeur
+    public function __construct($brand, $model) {
+        $this->brand = $brand;
+        $this->model = $model;
+    }
+
+    public function start() {
+        echo "La voiture $this->brand $this->model démarre.";
+    }
+}
+
+// Création d'un objet avec le constructeur
+$myCar = new Car("Toyota", "Corolla");
+
+$myCard->start(); // Affichera : "La voiture Toyota Corolla démarre."
+
+----
+
+== Bonnes pratiques pour l'initialisation des objets :
+
+=== Utilisation des constructeurs pour des valeurs obligatoires :
+
+Si certaines propriétés doivent toujours être initialisées avec des valeurs spécifiques, il est recommandé de les définir dans le constructeur. 
+
+=== ...
+
+Cela garantit que chaque objet aura les valeurs nécessaires dès sa création.
+
+=== Exemple :
+
+[source, php]
+----
+class User {
+    public $name;
+    public $email;
+
+    // Constructeur pour obliger la fourniture du name et de l'email
+
+    public function __construct($name, $email) {
+        $this->name = $name;
+        $this->email = $email;
+    }
+}
+
+// Oblige l'utilisateur à fournir name et email lors de la création
+$user = new User("Jean", "jean@example.com");
+----
+
+=== Réduire la complexité du constructeur :
+
+Évitez d'avoir trop de paramètres dans un constructeur. 
+
+=== ...
+
+Un constructeur avec trop de paramètres devient difficile à lire et à maintenir. 
+
+=== ...
+
+Utilisez des valeurs par défaut ou des setters pour simplifier l'initialisation.
+
+=== Exemple avec valeurs par défaut :
+
+[source, php]
+----
+class Car {
+    public $brand;
+    public $model;
+    public $color;
+
+    // Constructeur avec valeur par défaut
+    public function __construct($brand, $model, $color = "blanche") {
+        $this->brand = $brand;
+        $this->model = $model;
+        $this->color = $color;
+    }
+}
+
+$Car1 = new Car("Toyota", "Corolla"); // Couleur par défaut : blanche
+$Car2 = new Car("Honda", "Civic", "rouge"); // Couleur spécifiée : rouge
+----
+
+=== Encapsulation et utilisation des setters pour les valeurs optionnelles :
+
+Lorsque certaines propriétés ne sont pas obligatoires au moment de la création de l'objet, il est préférable d'utiliser des méthodes setter pour leur assignation. 
+
+=== ...
+
+Cela permet de garder le constructeur propre et de gérer ces valeurs de manière indépendante.
+
+=== Exemple d’utilisation d’un setter :
+
+[source, php]
+----
+class Car {
+    private $brand;
+    private $model;
+    private $color;
+
+    public function __construct($brand, $model) {
+        $this->brand = $brand;
+        $this->model = $model;
+    }
+
+    public function setColor($color) {
+        $this->color = $color;
+    }
+
+    public function start() {
+        echo "La voiture $this->brand $this->model de couleur $this->color démarre.";
+    }
+}
+
+
+// Création d'un objet avec constructeur
+$myCar = new Car("Toyota", "Corolla");
+$myCar->setColor("Rouge"); // Couleur optionnelle
+$myCar->start(); // Affichera : "La voiture Toyota Corolla de couleur Rouge démarre."
+----
+
+== Utilisation des null coalescing operators (??) :
+
+Lors de l'initialisation des objets, vous pouvez utiliser l'opérateur ?? pour définir des valeurs par défaut en cas d'absence de certaines données.
+
+=== Exemple :
+
+[source, php]
+----
+class Product {
+    public $name;
+    public $price;
+
+    public function __construct($name, $price = null) {
+        // Si le prix n'est pas fourni, il prend la valeur par défaut de 10
+        $this->price = $price ?? 10;
+        $this->name = $name;
+    }
+}
+
+$product1 = new Product("Ordinateur", 500);
+$product2 = new Product("Souris"); // Le prix sera par défaut de 10
+----
+
+== Initialisation paresseuse (Lazy Initialization) :
+
+L'initialisation paresseuse consiste à ne pas initialiser certaines ressources lourdes (comme la connexion à une base de données) tant qu'elles ne sont pas réellement nécessaires. 
+
+=== ...
+
+Cela permet d'améliorer les performances et de réduire la consommation de mémoire.
+
+=== Exemple :
+
+[source, php]
+----
+class BaseDeDonnées {
+    private $connexion;
+
+    public function getConnexion() {
+        if ($this->connexion === null) {
+            // Initialisation paresseuse de la connexion
+            $this->connexion = new PDO('mysql:host=localhost;dbname=maDB', 'user', 'password');
+        }
+        return $this->connexion;
+    }
+}
+----
+
+
+
+//---------------------------------------------------------------
+
+
+== Encapsulation : 
+
+Importance des modificateurs d'accès private, protected, et public pour sécuriser et structurer le code.
+
+//----------------
+=== ...
+
+Les modificateurs d'accès en programmation orientée objet (POO) permettent de contrôler la visibilité des propriétés et méthodes d'une classe. 
+
+
+=== ...
+
+En PHP, ces modificateurs sont public, protected et private. 
+
+
+=== ...
+
+Leur utilisation est essentielle pour structurer le code de manière sécurisée et maintenable, en définissant clairement ce qui peut ou ne peut pas être accédé depuis l'extérieur de la classe ou par les classes dérivées.
+
+== Modificateurs d'accès en PHP :
+
+=== Public (public) :
+
+Les propriétés et méthodes déclarées avec le mot-clé public sont accessibles de n'importe où : 
+
+=== ...
+
+[%step]
+* à la fois depuis l'intérieur de la classe
+* depuis les classes dérivées (en cas d'héritage)
+* depuis l'extérieur de la classe (les instances d'objets peuvent y accéder directement).
+
+=== ...
+
+=== Avantages : 
+
+Simple à utiliser pour des propriétés ou méthodes qui doivent être accessibles sans restriction.
+
+=== Inconvénients : 
+
+Si trop de données ou de fonctionnalités sont publiques, cela peut conduire à une mauvaise encapsulation, ce qui rend le code plus difficile à maintenir.
+
+
+=== Exemple :
+
+[source, php]
+----
+class Car {
+    public $brand;
+
+    public function start() {
+        echo "La voiture démarre.";
+    }
+}
+
+// Accès public
+$myCar = new Car();
+$myCar->brand = "Toyota"; // Possible car $brand est public
+$myCar->start(); // Possible car start() est public
+----
+
+
+=== Protected (protected) :
+
+Les propriétés et méthodes déclarées avec le mot-clé protected ne sont accessibles que:
+[%step]
+* à l'intérieur de la classe 
+* dans les classes dérivées (c'est-à-dire les classes enfants qui héritent de cette classe). 
+
+=== ...
+
+Elles ne sont pas accessibles directement depuis l'extérieur de la classe.
+
+
+=== Avantages : 
+
+Cela protège certaines parties du code contre des modifications directes depuis l'extérieur tout en permettant leur utilisation dans les classes dérivées, garantissant une meilleure encapsulation.
+
+
+=== Inconvénients : 
+
+Moins flexible qu'un accès public, mais il est utile pour protéger des éléments internes tout en permettant une certaine extensibilité.
+
+=== Exemple :
+
+[source, php]
+----
+class Car {
+    protected $brand;
+
+    public function setBrand($brand) {
+        $this->brand = $brand;
+    }
+}
+
+class ElectricCar extends Car {
+    public function displayBrand() {
+        echo "La brand de la voiture électrique est : " . $this->brand;
+    }
+}
+
+$electricCar = new ElectricCar();
+$electricCar->setBrand("Tesla"); // Possible via la méthode publique setBrand()
+$electricCar->displayBrand(); // Possible car displayBrand() est dans une classe dérivée
+----
+
+
+
+
+
+
+
+=== Private (private) :
+
+Les propriétés et méthodes déclarées avec le mot-clé private ne sont accessibles que 
+depuis l'intérieur de la classe dans laquelle elles sont définies. 
+
+=== ...
+
+Elles ne sont pas accessibles depuis les classes dérivées, ni depuis l'extérieur de la classe.
+
+=== Avantages : 
+
+Permet de protéger totalement les données ou les comportements internes d'une classe, empêchant toute modification directe depuis l'extérieur ou même depuis les sous-classes. 
+
+=== ...
+
+Cela garantit une encapsulation complète.
+
+
+=== Inconvénients : 
+
+Moins flexible car les sous-classes ne peuvent pas y accéder directement, mais cela renforce la sécurité et l'intégrité des données.
+
+=== Exemple :
+
+[source, php]
+----
+class Car {
+    private $brand;
+
+    public function setBrand($brand) {
+        $this->brand = $brand;
+    }
+
+    public function displayBrand() {
+        echo "La brand de la Car est : " . $this->brand;
+    }
+}
+
+$myCar = new Car();
+$myCar->setBrand("Toyota"); // Possible car setBrand() est public
+$myCar->displayBrand(); // Possible car displayBrand() est public
+//$myCar->brand = "Honda"; // Erreur : $brand est private
+----
+
+== Pourquoi utiliser les modificateurs d'accès ?
+
+=== Encapsulation : 
+
+L'encapsulation est un des principes clés de la programmation orientée objet. 
+
+=== ...
+
+Elle consiste à cacher les détails internes d'une classe (comme les données ou les méthodes) et à ne fournir qu'une interface contrôlée et sécurisée pour interagir avec ces détails. 
+
+=== ....
+
+Les modificateurs d'accès (private, protected, public) sont essentiels pour mettre en place cette encapsulation.
+
+=== Exemple d'encapsulation avec des setters et getters :
+
+[source, php]
+----
+class CompteBancaire {
+    private $solde = 0;
+
+    public function deposer($montant) {
+        $this->solde += $montant;
+    }
+
+    public function retirer($montant) {
+        if ($montant > $this->solde) {
+            echo "Solde insuffisant.";
+        } else {
+            $this->solde -= $montant;
+        }
+    }
+
+    public function getSolde() {
+        return $this->solde;
+    }
+}
+
+$compte = new CompteBancaire();
+$compte->deposer(500);
+echo $compte->getSolde(); // Affichera 500
+----
+
+=== ...
+
+Ici, l'accès au solde du compte est limité à travers des méthodes spécifiques (setters et getters). 
+
+
+=== ...
+
+L'utilisateur ne peut pas directement modifier ou accéder à la propriété $solde, ce qui empêche des modifications inattendues ou des erreurs.
+
+=== Sécurité et intégrité des données : 
+
+En utilisant les modificateurs private et protected, vous pouvez protéger les propriétés et méthodes sensibles pour éviter qu'elles soient modifiées directement par des utilisateurs externes ou par des sous-classes qui ne devraient pas avoir ce niveau d'accès.
+
+=== ...
+
+Par exemple, dans le cas d'une application bancaire, vous ne voulez pas que le solde du compte soit modifié directement depuis l'extérieur. 
+
+=== ...
+
+Vous utiliserez donc private pour cette propriété et fournirez des méthodes publiques pour la manipulation des valeurs de manière contrôlée.
+
+
+=== Faciliter la maintenance et l'évolution du code : 
+
+En restreignant l'accès à certaines parties du code, vous pouvez plus facilement modifier ou réorganiser l'implémentation interne sans affecter les autres parties du programme ou les classes qui héritent de celle-ci. 
+
+=== ...
+
+Par exemple, si vous changez l'implémentation d'une méthode privée, cela n'impactera pas le code externe ou les sous-classes.
+
+=== Meilleure organisation du code et séparation des responsabilités : 
+
+
+Les modificateurs d'accès vous aident à mieux organiser votre code. 
+
+
+=== ...
+
+Vous pouvez clairement séparer ce qui est exposé à l'extérieur d'une classe (les méthodes publiques) de ce qui est caché et géré en interne (les propriétés privées et protégées). 
+
+
+=== ...
+
+Cela favorise la création d'une interface publique bien définie, facilitant ainsi l'utilisation de vos objets par d'autres développeurs ou modules.
+
+
+
+
+//-----------------------------------------------------------------------------
+
+
+== Constructeurs et destructeurs : 
+
+Utilisation des méthodes magiques __construct() et __destruct().
+
+
+=== ...
+
+Les méthodes magiques en PHP sont des méthodes spéciales qui commencent par deux underscores (__). 
+
+
+=== ...
+
+Elles sont appelées automatiquement dans certains contextes particuliers. 
+
+
+Parmi les plus courantes, on trouve __construct() et __destruct(). 
+
+
+
+Ces deux méthodes jouent un rôle essentiel dans la gestion de la vie des objets en PHP.
+
+== Méthode __construct() :
+
+=== Qu'est-ce que __construct() ?
+
+La méthode __construct() est le constructeur d'une classe en PHP. 
+
+=== ...
+
+Elle est automatiquement appelée lorsque vous instanciez un objet de cette classe avec le mot-clé new. 
+
+
+=== ...
+
+Son rôle principal est d'initialiser l'objet, c'est-à-dire de définir les valeurs initiales des propriétés ou de préparer toute autre ressource nécessaire pour l'objet.
+
+== Comment utiliser __construct() ?
+
+
+=== Initialisation des propriétés : 
+
+La méthode __construct() est utilisée pour définir les propriétés d'une classe avec des valeurs fournies lors de la création de l'objet.
+
+=== Exemple :
+
+[source, php]
+----
+class Car {
+    public $brand;
+    public $model;
+
+    // Constructeur qui initialise les propriétés de la voiture
+    public function __construct($brand, $model) {
+        $this->brand = $brand;
+        $this->model = $model;
+    }
+
+    public function displayDetails() {
+        echo "La voiture est une $this->brand $this->model.";
+    }
+}
+
+// Création d'un objet avec initialisation des propriétés via le constructeur
+$myCar = new Car("Toyota", "Corolla");
+$myCar->displayDetails(); // Affichera : "La voiture est une Toyota Corolla."
+----
+
+
+== Gestion de la logique d'initialisation : 
+
+Le constructeur peut aussi contenir une logique plus complexe, comme:
+[%step]
+* la connexion à une base de données, 
+* le chargement de fichiers, 
+* la validation des données fournies lors de l'instanciation.
+
+=== Exemple :
+
+[source, php]
+----
+class DataBase {
+    private $connexion;
+
+    // Le constructeur tente de se connecter à la base de données
+    public function __construct($host, $dbname, $user, $pass) {
+        try {
+            $this->connexion = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+            echo "Connexion réussie à la base de données.";
+        } catch (PDOException $e) {
+            echo "Erreur : " . $e->getMessage();
+        }
+    }
+}
+
+// Création d'une instance de la classe qui initialise la connexion à la BDD
+$db = new DataBase('localhost', 'maBDD', 'utilisateur', 'motdepasse');
+----
+
+
+=== Valeurs par défaut dans le constructeur : 
+
+Si certaines propriétés ne sont pas toujours fournies lors de l'instanciation, vous pouvez spécifier des valeurs par défaut dans le constructeur.
+
+=== Exemple :
+
+[source, php]
+----
+class Produit {
+    public $nom;
+    public $prix;
+
+    // Le constructeur définit un prix par défaut si aucun prix n'est fourni
+    public function __construct($nom, $prix = 10) {
+        $this->nom = $nom;
+        $this->prix = $prix;
+    }
+
+    public function afficherPrix() {
+        echo "Le prix du produit $this->nom est $this->prix €.";
+    }
+}
+
+$produit1 = new Produit("Ordinateur", 500);
+$produit2 = new Produit("Souris"); // Prix par défaut : 10 €
+
+$produit1->afficherPrix(); // Affichera : "Le prix du produit Ordinateur est 500 €."
+$produit2->afficherPrix(); // Affichera : "Le prix du produit Souris est 10 €."
+----
+
+== Méthode __destruct() :
+
+=== Qu'est-ce que __destruct() ?
+
+La méthode __destruct() est le destructeur d'une classe en PHP. 
+
+=== ...
+
+Elle est automatiquement appelée lorsque l'objet est détruit, c'est-à-dire lorsqu'il n'est plus référencé (par exemple, lorsque le script se termine ou que l'objet est explicitement supprimé). 
+
+=== ...
+
+Son rôle principal est de libérer les ressources utilisées par l'objet, comme:
+[%step]
+* fermer une connexion à une base de données, 
+* vider un fichier temporaire, etc.
+
+== Comment utiliser __destruct() ?
+
+=== Libérer les ressources (connexion à une base de données, fichier, etc.) : 
+
+Le destructeur est souvent utilisé pour fermer proprement des connexions ou des fichiers qui ont été ouverts lors de l'utilisation de l'objet.
+
+
+=== Exemple :
+
+[source, php]
+----
+class DataBase {
+    private $connexion;
+
+    // Connexion à la base de données via le constructeur
+    public function __construct($host, $dbname, $user, $pass) {
+        $this->connexion = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+        echo "Connexion à la base de données établie.<br>";
+    }
+
+    // Fermeture de la connexion à la base de données lors de la destruction de l'objet
+    public function __destruct() {
+        $this->connexion = null;
+        echo "Connexion à la base de données fermée.<br>";
+    }
+}
+// Création et destruction automatique de l'objet
+$db = new DataBase('localhost', 'maBDD', 'utilisateur', 'motdepasse');
+----
+
+=== ...
+
+Dans cet exemple, le destructeur libère la connexion à la base de données lorsque l'objet $db est détruit (ce qui se produit automatiquement à la fin du script ou lorsqu'il n'est plus utilisé).
+
+
+=== Nettoyage des fichiers ou des ressources temporaires : 
+
+Si l'objet a utilisé des ressources temporaires comme des fichiers, le destructeur peut les nettoyer avant que l'objet ne soit détruit.
+
+
+=== Exemple :
+
+[source, php]
+----
+class TemporaryFile {
+    private $path;
+
+    // Création d'un fichier temporaire
+    public function __construct($path) {
+        $this->path = $path;
+        file_put_contents($this->path, "Contenu temporaire");
+        echo "Fichier temporaire créé : $this->path<br>";
+    }
+
+    // Suppression du fichier temporaire lors de la destruction de l'objet
+    public function __destruct() {
+        if (file_exists($this->path)) {
+            unlink($this->path); // Suppression du fichier
+            echo "Fichier temporaire supprimé : $this->path<br>";
+        }
+    }
+}
+
+// Création et destruction automatique du fichier temporaire
+$fichier = new TemporaryFile("temporary.txt");
+----
+
+=== ...
+
+Ici, le fichier temporaire est supprimé lorsque l'objet $fichier est détruit, assurant ainsi que les ressources sont nettoyées correctement.
+
+=== Débogage : 
+
+
+Vous pouvez aussi utiliser le destructeur pour suivre les moments où des objets sont détruits.
+
+=== ...
+
+C'utile pour détecter les fuites de mémoire ou comprendre la durée de vie des objets.
+
+
+
+
+== Différences entre __construct() et __destruct() :
+
+
+__construct() est appelé lorsque l'objet est instancié. 
+
+
+=== ...
+
+Il est utilisé pour initialiser l'objet avec des données ou pour préparer des ressources nécessaires à son fonctionnement.
+
+=== ...
+
+__destruct() est appelé lorsque l'objet est détruit. 
+
+=== ...
+
+Il est utilisé pour libérer les ressources allouées par l'objet, telles que:
+[%step]
+* les connexions aux bases de données, 
+* les fichiers temporaires, 
+* etc.
+
+//------------------------------------
+
+=== Concepts avancés de POO 
+
+== Héritage : 
+
+Étendre une classe pour en hériter les fonctionnalités.
+
+=== ...
+
+En programmation orientée objet (POO), l'héritage est un mécanisme qui permet à une classe de **dériver** d'une autre classe, héritant ainsi de ses propriétés et méthodes. 
+
+=== ...
+
+Cela permet de réutiliser du code et de créer des structures hiérarchiques où une classe "enfant" (ou sous-classe) peut étendre ou modifier les fonctionnalités d'une classe "parent" (ou super-classe).
+
+
+
+
+== Concept de base de l'héritage :
+
+=== Lorsqu'une classe hérite d'une autre :
+
+Elle obtient toutes les propriétés et méthodes de la classe parente, à l'exception de celles qui sont privées (private).
+
+=== ...
+
+Elle peut ajouter de nouvelles propriétés ou méthodes spécifiques à elle-même.
+
+=== ...
+
+Elle peut surcharger (ou redéfinir) des méthodes de la classe parente pour les adapter à ses besoins spécifiques.
+
+=== ...
+
+== Syntaxe de l'héritage en PHP :
+
+Pour hériter d'une classe en PHP, on utilise le mot-clé extends.
+
+[source, php]
+----
+class ClasseParente {
+    // Propriétés de la classe parente
+    public $propriete;
+
+    // Méthode de la classe parente
+    public function afficher() {
+        echo "Méthode de la classe parente.";
+    }
+}
+
+class ClasseEnfant extends ClasseParente {
+    // Propriétés et méthodes supplémentaires ou modifiées
+}
+----
+
+=== Exemple d'héritage simple :
+
+
+Supposons que nous ayons une classe Voiture qui représente les caractéristiques de base d'une voiture, et nous voulons créer une classe VoitureElectrique qui hérite de cette classe tout en ajoutant des fonctionnalités supplémentaires spécifiques aux voitures électriques.
+
+[source, php]
+----
+// Classe parente
+class Care {
+
+    public $brand;
+    public $model;
+
+    public function __construct($brand, $model) {
+        $this->brand = $brand;
+        $this->model = $model;
+    }
+
+    public function start() {
+        echo "La voiture $this->brand $this->model démarre.<br>";
+    }
+
+    public function stop() {
+        echo "La voiture $this->brand $this->model s'arrête.<br>";
+    }
+}
+
+// Classe enfant qui hérite de Voiture
+class ElectricCar extends Voiture {
+    public $autonomie;
+
+    // Constructeur qui initialise également l'autonomie spécifique aux voitures électriques
+
+    public function __construct($brand, $model, $autonomy) {
+
+        // Appel du constructeur de la classe parente
+        parent::__construct($brand, $model);
+        $this->autonomy = $autonomy;
+
+    }
+
+    // Nouvelle méthode spécifique aux voitures électriques
+    public function reload() {
+        echo "La voiture $this->brand $this->model est en train de se recharger.<br>";
+    }
+
+    // Surcharger la méthode "start" pour ajouter un comportement spécifique
+    public function start() {
+        echo "La voiture électrique $this->brand $this->model démarre silencieusement.<br>";
+    }
+}
+
+// Utilisation de l'héritage
+$car1 = new Car("Toyota", "Corolla");
+$car1->start(); // Affichera : La voiture Toyota Corolla démarre.
+
+$voitureElec = new ElectricCar("Tesla", "Model S", 600);
+$voitureElec->start();  // Affichera : La voiture électrique Tesla Model S démarre silencieusement.
+$voitureElec->reload(); // Affichera : La voiture Tesla Model S est en train de se recharger.
+----
+
+== Explication de l'exemple :
+
+=== Classe parente Voiture :
+
+Cette classe contient les propriétés brand et model, ainsi que les méthodes start() et stop().
+
+=== ...
+
+Le constructeur initialise les propriétés brand et model.
+
+=== Classe enfant ElectricCar :
+
+Cette classe hérite de toutes les propriétés et méthodes de la classe Voiture.
+
+=== ...
+
+Elle ajoute une nouvelle propriété autonomy, qui est spécifique aux voitures électriques.
+
+=== ...
+
+Le constructeur de la classe enfant appelle le constructeur de la classe parente avec parent::__construct(), puis ajoute des comportements spécifiques (l'initialisation de l'autonomie).
+
+=== ...
+
+La méthode start() est surchargée pour modifier le comportement spécifique des voitures électriques.
+
+=== ...
+
+Une nouvelle méthode reload() est ajoutée, car elle est spécifique aux voitures électriques.
+
+=== Appel des méthodes et propriétés de la classe parente avec parent:: :
+
+
+Lorsqu'une classe enfant hérite d'une classe parente, elle peut accéder aux méthodes et propriétés de la classe parente via le mot-clé parent::. 
+
+=== ...
+
+Cela est particulièrement utile lorsqu'on souhaite appeler une méthode ou un constructeur de la classe parente à partir de la classe enfant.
+
+=== ...
+
+Dans l'exemple précédent, nous avons utilisé parent::__construct() pour appeler le constructeur de la classe Voiture depuis la classe ElectricCar. 
+
+=== ...
+
+Cela permet de s'assurer que les propriétés de la classe parente sont bien initialisées avant de continuer à initialiser les propriétés spécifiques à la classe enfant.
+
+== Surcharger des méthodes :
+
+La surcharge (ou redéfinition) est le processus par lequel une classe enfant modifie une méthode héritée de la classe parente pour lui donner un comportement différent. 
+
+=== ...
+
+Dans notre exemple, la classe ElectricCar a surchargé la méthode start() pour ajouter un comportement spécifique aux voitures électriques.
+
+=== ...
+
+Lorsque la méthode start() est appelée sur une instance de ElectricCar, c'est la version surchargée qui est exécutée, et non celle de la classe parente.
+
+== Héritage et modificateurs d'accès (public, protected, private) :
+
+Les propriétés et méthodes public de la classe parente sont accessibles à la classe enfant et à l'extérieur.
+
+=== ...
+
+Les propriétés et méthodes protected sont accessibles à la classe enfant mais pas à l'extérieur de celle-ci.
+
+=== ...
+
+Les propriétés et méthodes private ne sont accessibles qu'à l'intérieur de la classe où elles sont définies. 
+
+=== ...
+
+Elles ne sont pas visibles par la classe enfant.
+
+=== Exemple avec protected :
+
+[source, php]
+----
+class Car {
+    protected $brand;
+
+    public function __construct($brand) {
+        $this->brand= $brand;
+    }
+
+    protected function start() {
+        echo "La voiture démarre.<br>";
+    }
+}
+
+class SportCar extends Car {
+    public function startSport() {
+        // On peut accéder à la méthode et la propriété protected
+        echo "La voiture sport $this->brand démarre en mode sport.<br>";
+        $this->start();
+    }
+}
+
+$voitureSport = new SportCar("Ferrari");
+$voitureSport->startSport(); // Affichera : "La voiture sport Ferrari démarre en mode sport."
+----
+
+=== Dans cet exemple :
+
+La méthode start() et la propriété brand sont protected, donc elles sont accessibles depuis la classe enfant SportCar, mais elles ne sont pas accessibles directement depuis l'extérieur (une instance d'objet ne pourrait pas les appeler ou les modifier directement).
+
+
+
+
+//--------------------------------------------------------------------------
+
+== Polymorphisme : 
+
+Utilisation des interfaces et des classes abstraites pour implémenter plusieurs comportements en fonction du contexte.
+
+//-------------------------------------------------------------------------------
+
+Les interfaces et les classes abstraites sont des concepts importants en programmation orientée objet (POO). 
+
+=== ...
+
+Ils permettent de définir des structures et des contrats pour les classes qui les implémentent ou les étendent.
+
+=== ...
+
+Leur utilisation est essentielle lorsque vous devez créer des systèmes qui permettent à plusieurs classes de partager certains comportements tout en ayant la flexibilité d'implémenter leurs propres fonctionnalités spécifiques.
+
+== Les interfaces :
+
+=== Une interface en PHP définit un contrat : 
+
+Elle énumère des méthodes que les classes doivent implémenter, mais elle ne contient pas de code implémenté (pas de corps de méthode). 
+
+=== ...
+
+Une classe qui implémente une interface s'engage à implémenter toutes les méthodes définies dans cette interface.
+
+=== Utilisation des interfaces :
+
+Les interfaces sont utiles lorsque vous avez différentes classes qui doivent implémenter des méthodes similaires mais peuvent le faire de manière différente.
+
+=== ...
+
+Une interface ne peut pas contenir de code concret (pas de propriétés ni de méthodes avec corps), seulement des déclarations de méthodes publiques.
+
+
+=== ...
+
+Une classe peut implémenter plusieurs interfaces, ce qui permet à une classe d'avoir plusieurs comportements.
+
+=== Exemple d'interface :
+
+
+[source, php]
+----
+interface Reparable {
+    public function reparer();
+}
+
+interface Rechargeable {
+    public function recharger();
+}
+
+// Classe Voiture qui implémente l'interface Reparable
+class Voiture implements Reparable {
+
+    public function reparer() {
+        echo "La voiture est réparée.<br>";
+    }
+}
+
+// Classe VoitureElectrique qui implémente deux interfaces : Reparable et Rechargeable
+class VoitureElectrique implements Reparable, Rechargeable {
+    public function reparer() {
+        echo "La voiture électrique est réparée.<br>";
+    }
+
+    public function recharger() {
+        echo "La voiture électrique est en train de se recharger.<br>";
+    }
+}
+
+// Utilisation des classes qui implémentent des interfaces
+$voiture = new Voiture();
+$voiture->reparer(); // Affichera : La voiture est réparée.
+
+$voitureElec = new VoitureElectrique();
+$voitureElec->reparer();  // Affichera : La voiture électrique est réparée.
+$voitureElec->recharger(); // Affichera : La voiture électrique est en train de se recharger.
+----
+
+
+=== Explication :
+
+Reparable et Rechargeable sont des interfaces qui définissent les méthodes reparer() et recharger() respectivement. 
+
+=== ...
+
+Ces interfaces forcent toute classe qui les implémente à fournir une implémentation de ces méthodes.
+
+=== ....
+
+La classe Voiture implémente uniquement l'interface Reparable, elle doit donc uniquement fournir l'implémentation de reparer().
+
+
+=== ....
+
+La classe VoitureElectrique implémente deux interfaces (Reparable et Rechargeable), elle doit donc implémenter les deux méthodes reparer() et recharger().
+
+=== ....
+
+L'avantage des interfaces est que cela permet à une classe d'avoir plusieurs comportements en fonction des interfaces qu'elle implémente.
+
+
+== Les classes abstraites :
+
+Une classe abstraite est similaire à une classe régulière, mais elle ne peut pas être instanciée directement. 
+
+=== ...
+
+Elle sert de modèle pour d'autres classes. 
+
+=== ...
+
+Contrairement à une interface, une classe abstraite peut contenir des méthodes avec une implémentation partielle ou complète, mais elle peut également contenir des méthodes abstraites (sans corps) que les classes dérivées doivent implémenter.
+
+== Utilisation des classes abstraites :
+
+
+Les classes abstraites sont utilisées lorsqu'on veut fournir une implémentation par défaut de certaines méthodes, tout en forçant les classes dérivées à implémenter d'autres méthodes.
+
+=== ...
+
+Contrairement aux interfaces, une classe abstraite peut contenir des propriétés et des méthodes avec une implémentation concrète.
+
+=== ...
+
+Une classe ne peut hériter que d'une seule classe abstraite (limitation de l'héritage simple en PHP).
+
+
+=== Exemple de classe abstraite :
+
+[source, php]
+----
+abstract class Vehicule {
+    protected $marque;
+    protected $modele;
+
+    // Constructeur commun à toutes les classes qui dérivent de Vehicule
+    public function __construct($marque, $modele) {
+        $this->marque = $marque;
+        $this->modele = $modele;
+    }
+
+    // Méthode abstraite, les classes dérivées doivent l'implémenter
+    abstract public function demarrer();
+
+    // Méthode concrète que les classes dérivées peuvent utiliser telle quelle ou redéfinir
+    public function arreter() {
+        echo "Le véhicule $this->marque $this->modele s'arrête.<br>";
+    }
+}
+
+// Classe Voiture qui hérite de la classe abstraite Vehicule
+class Voiture extends Vehicule {
+    // Implémentation de la méthode abstraite
+    public function demarrer() {
+        echo "La voiture $this->marque $this->modele démarre.<br>";
+    }
+}
+
+// Classe Moto qui hérite de la classe abstraite Vehicule
+class Moto extends Vehicule {
+    // Implémentation de la méthode abstraite
+    public function demarrer() {
+        echo "La moto $this->marque $this->modele démarre.<br>";
+    }
+}
+
+// Utilisation des classes dérivées
+$voiture = new Voiture("Toyota", "Corolla");
+$voiture->demarrer(); // Affichera : La voiture Toyota Corolla démarre.
+$voiture->arreter();  // Affichera : Le véhicule Toyota Corolla s'arrête.
+
+$moto = new Moto("Yamaha", "MT-09");
+$moto->demarrer();    // Affichera : La moto Yamaha MT-09 démarre.
+$moto->arreter();     // Affichera : Le véhicule Yamaha MT-09 s'arrête.
+----
+
+=== Explication :
+
+La classe Vehicule est une classe abstraite. 
+
+=== ...
+
+
+Elle définit une méthode abstraite demarrer(), que toutes les classes qui héritent de Vehicule doivent implémenter.
+
+=== ...
+
+Voiture et Moto sont des classes concrètes qui héritent de Vehicule. 
+
+
+=== ...
+
+Elles doivent fournir leur propre implémentation de la méthode demarrer().
+
+
+=== ...
+
+La classe abstraite Vehicule a également une méthode concrète arreter(), qui est commune à tous les véhicules et peut être utilisée telle quelle ou redéfinie dans les classes enfants.
+
+
+== Combinaison d'interfaces et de classes abstraites :
+
+Il est possible d'utiliser à la fois des interfaces et des classes abstraites dans une même architecture. 
+
+=== ...
+
+Par exemple, une classe abstraite peut implémenter une ou plusieurs interfaces.
+
+=== Exemple de combinaison :
+[source, php]
+----
+interface Volant {
+    public function voler();
+}
+
+abstract class Oiseau implements Volant {
+    public function manger() {
+        echo "L'oiseau mange.<br>";
+    }
+
+    // Les classes enfants doivent implémenter cette méthode
+    abstract public function chanter();
+}
+
+// Classe enfant qui hérite de la classe abstraite et implémente l'interface
+class Aigle extends Oiseau {
+    public function voler() {
+        echo "L'aigle vole haut dans le ciel.<br>";
+    }
+
+    public function chanter() {
+        echo "L'aigle émet des cris perçants.<br>";
+    }
+}
+
+$aigle = new Aigle();
+$aigle->voler();  // Affichera : L'aigle vole haut dans le ciel.
+$aigle->manger(); // Affichera : L'oiseau mange.
+$aigle->chanter(); // Affichera : L'aigle émet des cris perçants.
+----
+
+=== Explication :
+
+Volant est une interface qui impose la méthode voler().
+
+=== ...
+
+Oiseau est une classe abstraite qui implémente l'interface Volant et qui contient à la fois une méthode concrète manger() et une méthode abstraite chanter().
+
+=== ...
+
+Aigle est une classe concrète qui hérite de Oiseau et implémente toutes les méthodes requises par l'interface et la classe abstraite.
+
+
+
+//-------------------------------------------------------------------------------
+== Exemple pratique : 
+
+Créer une interface Rechargeable avec une méthode recharger(), puis la mettre en œuvre dans VoitureElectrique.
+
+
+
+
+== Late Static Binding : 
+
+Compréhension du mot-clé static et du comportement self vs static.
+
+=== ...
+//-----------------------------STATIC--------------------------------
+
+En PHP, le mot-clé static est utilisé pour définir des propriétés et des méthodes statiques. 
+
+
+=== ...
+
+Ces propriétés et méthodes appartiennent à la classe elle-même plutôt qu'à une instance spécifique de la classe. 
+
+=== ...
+
+Cela signifie qu'elles peuvent être utilisées sans qu'un objet ne soit créé.
+
+
+=== ...
+
+De plus, self et static sont deux mots-clés qui sont souvent utilisés en combinaison avec static pour référencer des propriétés ou des méthodes statiques, mais ils fonctionnent différemment dans le contexte de l'héritage.
+
+
+== Le mot-clé static :
+
+=== Méthodes statiques :
+
+Les méthodes statiques peuvent être appelées directement sur la classe sans créer d'instance. 
+
+=== ...
+
+Elles sont définies avec le mot-clé static.
+
+=== Exemple de méthode statique :
+
+[source, php]
+----
+class Math {
+    public static function addition($a, $b) {
+        return $a + $b;
+    }
+}
+
+// Appel de la méthode statique sans créer d'objet
+echo Math::addition(5, 10); // Affichera 15
+----
+
+
+=== Propriétés statiques :
+
+Les propriétés statiques fonctionnent de manière similaire aux méthodes statiques. 
+
+
+Elles sont partagées par toutes les instances d'une classe, ce qui signifie qu'elles ne sont pas spécifiques à une instance d'objet mais communes à toutes les instances.
+
+=== Exemple de propriété statique :
+
+[source, php]
+----
+class Compteur {
+    public static $nombre = 0;
+
+    public static function incrementer() {
+        self::$nombre++;
+    }
+}
+
+// Utilisation de la propriété statique sans créer d'objet
+Compteur::incrementer();
+echo Compteur::$nombre; // Affichera 1
+
+Compteur::incrementer();
+echo Compteur::$nombre; // Affichera 2
+----
+
+
+== Différence entre self et static dans le contexte de l'héritage :
+
+=== Le mot-clé self :
+
+self fait référence à la classe où il est défini. 
+
+=== ...
+
+Lorsque vous utilisez self, PHP utilisera la méthode ou la propriété statique de la classe actuelle, même si la méthode est appelée depuis une classe dérivée (enfant).
+
+
+=== ...
+
+Cela signifie que self ne prend pas en compte l'héritage dynamique et fait référence à la classe statiquement définie.
+
+=== Exemple avec self :
+
+[source, php]
+----
+class ParentClass {
+    public static function quiSuisJe() {
+        echo "Je suis la classe ParentClass.<br>";
+    }
+
+    public static function appeler() {
+        self::quiSuisJe();
+    }
+}
+
+class EnfantClass extends ParentClass {
+    public static function quiSuisJe() {
+        echo "Je suis la classe EnfantClass.<br>";
+    }
+}
+
+// Appel via la classe parent
+ParentClass::appeler(); // Affichera : Je suis la classe ParentClass.
+
+// Appel via la classe enfant
+EnfantClass::appeler(); // Affichera : Je suis la classe ParentClass.
+----
+
+
+=== Explication :
+
+Dans cet exemple, lorsque self::quiSuisJe() est appelé dans la méthode appeler(), il fait référence à la méthode quiSuisJe() définie dans ParentClass, même si appeler() est appelé à partir de EnfantClass. 
+
+
+Cela montre que self fait référence à la classe où il est défini statiquement et non à la classe d'où la méthode est appelée.
+
+
+=== Le mot-clé static (Late Static Binding) :
+
+static, lorsqu'il est utilisé, introduit un concept appelé liaison statique tardive (Late Static Binding). 
+
+=== ...
+
+Cela permet de faire référence à la classe qui a effectivement appelé la méthode, c'est-à-dire la classe actuelle lors de l'exécution. Ainsi, contrairement à self, static est résolu dynamiquement.
+
+=== ...
+
+Cela permet à une méthode dans une classe parent d'appeler une méthode redéfinie dans une classe enfant.
+
+=== Exemple avec static :
+
+[source, php]
+----
+class ParentClass {
+    public static function quiSuisJe() {
+        echo "Je suis la classe ParentClass.<br>";
+    }
+
+    public static function appeler() {
+        static::quiSuisJe();
+    }
+}
+
+class EnfantClass extends ParentClass {
+    public static function quiSuisJe() {
+        echo "Je suis la classe EnfantClass.<br>";
+    }
+}
+
+// Appel via la classe parent
+ParentClass::appeler(); // Affichera : Je suis la classe ParentClass.
+
+// Appel via la classe enfant
+EnfantClass::appeler(); // Affichera : Je suis la classe EnfantClass.
+----
+
+=== Explication :
+
+
+Dans cet exemple, lorsque static::quiSuisJe() est utilisé dans la méthode appeler(), PHP utilise la méthode quiSuisJe() de la classe qui appelle réellement la méthode (ce qui est EnfantClass dans le deuxième appel). 
+
+=== ...
+
+Cela montre que static est résolu dynamiquement en fonction de la classe qui effectue l'appel.
+
+
+== Quand utiliser self et static ?
+
+Utiliser self lorsque vous voulez être sûr que la méthode ou la propriété appelée est celle de la classe actuelle, sans tenir compte des sous-classes.
+
+
+=== Cas d'utilisation :
+
+[%step]
+* lorsque vous savez que le comportement ne doit pas être modifié dans les sous-classes
+* lorsque la méthode ou la propriété est spécifique à la classe définie et ne doit pas être surchargée.
+
+=== ...
+
+Utiliser static (Late Static Binding) lorsque vous voulez que le comportement tienne compte de la classe qui fait l'appel, même si l'appel est effectué depuis une sous-classe.
+
+=== Cas d'utilisation : 
+
+
+Lorsque vous voulez permettre aux sous-classes de redéfinir une méthode ou une propriété et que la classe parente doit appeler la méthode/propriété correcte en fonction de la classe qui fait l'appel.
+
+
+== Exemple pratique de self et static :
+
+
+[source, php]
+----
+class Animal {
+    public static function identifier() {
+        self::getNom();
+    }
+
+    public static function identifierDynamique() {
+        static::getNom();
+    }
+
+    public static function getNom() {
+        echo "Je suis un animal.<br>";
+    }
+}
+
+class Chien extends Animal {
+    public static function getNom() {
+        echo "Je suis un chien.<br>";
+    }
+}
+
+// Appel avec self
+Animal::identifier(); // Affichera : Je suis un animal.
+Chien::identifier();  // Affichera : Je suis un animal.
+
+// Appel avec static
+Animal::identifierDynamique(); // Affichera : Je suis un animal.
+Chien::identifierDynamique();  // Affichera : Je suis un chien.
+----
+
+=== Explication :
+
+self::getNom() utilise la méthode définie dans la classe Animal, même lorsque identifier() est appelée depuis Chien. 
+
+
+Cela montre que self fait référence à la classe où la méthode est définie, et non à la classe qui fait l'appel.
+
+static::getNom(), en revanche, tient compte de la classe qui fait l'appel. Lorsque identifierDynamique() est appelée depuis Chien, PHP appelle la méthode getNom() de Chien.
+
+
+
+
+//-----------------------------END OF STATIC--------------------------------
+
+
+== Traits : 
+
+Réutilisation de morceaux de code à travers plusieurs classes sans utiliser l’héritage.
+
+//-------------------------------------------------------------------
+
+=== ...
+
+Les traits en PHP sont un mécanisme permettant de réutiliser du code à travers plusieurs classes sans avoir à utiliser l'héritage. 
+
+
+=== ...
+
+Ils sont particulièrement utiles lorsque vous avez des morceaux de code (méthodes) que plusieurs classes doivent partager, mais que vous ne pouvez pas ou ne voulez pas utiliser l'héritage classique. 
+
+=== ...
+
+En PHP, une classe peut utiliser plusieurs traits, ce qui permet une flexibilité accrue par rapport à l'héritage simple, où une classe ne peut hériter que d'une seule autre classe.
+
+== Pourquoi utiliser des traits ?
+
+=== Réutilisation de code : 
+
+Un trait permet de définir un ensemble de méthodes qui peuvent être utilisées dans plusieurs classes.
+
+=== Évite les limites de l'héritage simple : 
+
+En PHP, une classe ne peut hériter que d'une seule classe. 
+
+=== ...
+
+Les traits permettent de contourner cette limitation en "injectant" des méthodes dans plusieurs classes.
+
+=== Séparation des préoccupations : 
+
+Les traits permettent de découper des fonctionnalités réutilisables en unités logiques distinctes, rendant le code plus modulaire et facile à maintenir.
+
+=== Définition d’un trait :
+
+Un trait est défini avec le mot-clé trait. 
+
+=== ...
+
+Ensuite, pour qu'une classe utilise ce trait, on utilise le mot-clé **use** à l'intérieur de la classe.
+
+=== Exemple simple d'utilisation d'un trait :
+
+
+[source, php]
+----
+trait Logger {
+    public function log($message) {
+        echo "[LOG] " . $message . "<br>";
+    }
+}
+
+trait FileLogger {
+    public function logToFile($filename, $message) {
+        file_put_contents($filename, "[LOG] " . $message . PHP_EOL, FILE_APPEND);
+    }
+}
+
+class Application {
+    use Logger, FileLogger;
+
+    public function run() {
+        $this->log("L'application a démarré.");
+        $this->logToFile("app.log", "L'application a démarré.");
+    }
+}
+
+$app = new Application();
+$app->run();
+// Affichera : [LOG] L'application a démarré.
+// Écrira dans app.log : [LOG] L'application a démarré.
+----
+
+
+=== Explication :
+
+=== Définition du trait Logger :
+
+Le trait Logger contient une méthode log() qui affiche un message avec une balise [LOG].
+
+
+Il peut être utilisé par toute classe souhaitant inclure cette fonctionnalité de journalisation.
+
+=== Définition du trait FileLogger :
+
+Le trait FileLogger contient une méthode logToFile() qui permet d'écrire un message dans un fichier.
+
+
+=== Utilisation des traits dans la classe Application :
+
+La classe Application utilise les deux traits (Logger et FileLogger) avec le mot-clé use. 
+
+=== ...
+
+Cela permet à la classe d'avoir accès aux méthodes log() et logToFile() sans avoir à hériter d'une classe spécifique.
+
+
+=== Combiner plusieurs traits dans une classe :
+
+Une classe peut utiliser plusieurs traits en les listant après le mot-clé use, séparés par des virgules.
+
+=== Exemple :
+
+[source, php]
+----
+trait TraitA {
+    public function methodA() {
+        echo "Méthode A du TraitA<br>";
+    }
+}
+
+trait TraitB {
+    public function methodB() {
+        echo "Méthode B du TraitB<br>";
+    }
+}
+
+class MaClasse {
+    use TraitA, TraitB;
+}
+
+$obj = new MaClasse();
+$obj->methodA(); // Affichera : Méthode A du TraitA
+$obj->methodB(); // Affichera : Méthode B du TraitB
+----
+
+
+== Résolution de conflits avec des traits :
+
+Si deux traits utilisés dans une même classe définissent des méthodes portant le même nom, cela provoquera un conflit. 
+
+=== ...
+
+PHP permet de résoudre ces conflits:
+[%step]
+* à l'aide du mot-clé **insteadof**, qui indique quel trait utiliser en priorité,
+* en renvoyant une méthode sous un autre nom avec le mot-clé **as**.
+
+=== Exemple de résolution de conflit :
+[source, php]
+----
+trait TraitA {
+    public function parler() {
+        echo "Bonjour du TraitA<br>";
+    }
+}
+
+trait TraitB {
+    public function parler() {
+        echo "Bonjour du TraitB<br>";
+    }
+}
+
+class MaClasse {
+    use TraitA, TraitB {
+        TraitA::parler insteadof TraitB; // Utiliser la méthode parler du TraitA
+        TraitB::parler as parlerDeB;     // Renommer la méthode parler du TraitB
+    }
+}
+
+$obj = new MaClasse();
+$obj->parler();       // Affichera : Bonjour du TraitA
+$obj->parlerDeB();    // Affichera : Bonjour du TraitB
+----
+
+
+== Explication :
+
+=== TraitA::parler insteadof TraitB : 
+
+Cela indique que, en cas de conflit, on souhaite utiliser la méthode parler() du TraitA au lieu de celle du TraitB.
+
+=== TraitB::parler as parlerDeB : 
+
+Cela permet de renommer la méthode parler() du TraitB en parlerDeB, ce qui permet à la classe d'accéder aux deux méthodes.
+
+=== Utilisation de méthodes abstraites dans les traits :
+
+Les traits peuvent définir des méthodes abstraites, obligeant les classes qui les utilisent à implémenter ces méthodes. 
+
+=== ...
+
+C'est utile si le trait dépend de certaines méthodes qui doivent être définies dans la classe qui l'utilise.
+
+
+=== Exemple de méthode abstraite dans un trait :
+[source, php]
+----
+trait Identifiable {
+    abstract public function getId();
+
+    public function afficherId() {
+        echo "L'ID est : " . $this->getId() . "<br>";
+    }
+}
+
+class Utilisateur {
+    use Identifiable;
+
+    public function getId() {
+        return 42;
+    }
+}
+
+$user = new Utilisateur();
+$user->afficherId(); // Affichera : L'ID est : 42
+----
+
+
+=== Explication :
+
+Le trait Identifiable déclare une méthode abstraite getId(). 
+
+=== ...
+
+Toute classe qui utilise ce trait doit fournir une implémentation de getId().
+
+=== ...
+
+La méthode concrète afficherId() dans le trait dépend de la méthode getId() implémentée par la classe Utilisateur.
+
+=== Traits et héritage :
+
+Les traits peuvent être utilisés dans une hiérarchie de classes qui utilisent l'héritage. 
+
+=== ...
+
+Lorsqu'un trait est utilisé dans une classe, ses méthodes sont intégrées dans cette classe comme si elles faisaient partie de la classe elle-même.
+
+=== Exemple d'utilisation de traits avec l'héritage :
+
+[source, php]
+----
+trait Securite {
+    public function verifierAcces() {
+        echo "Accès vérifié.<br>";
+    }
+}
+
+class Utilisateur {
+    use Securite;
+
+    public function connecter() {
+        $this->verifierAcces();
+        echo "Utilisateur connecté.<br>";
+    }
+}
+
+class Admin extends Utilisateur {
+    public function connecter() {
+        $this->verifierAcces();
+        echo "Administrateur connecté.<br>";
+    }
+}
+
+$user = new Utilisateur();
+$user->connecter(); // Affichera : Accès vérifié. Utilisateur connecté.
+
+$admin = new Admin();
+$admin->connecter(); // Affichera : Accès vérifié. Administrateur connecté.
+----
+
+
+=== Explication :
+
+Le trait Securite est utilisé à la fois par la classe Utilisateur et la classe Admin. 
+
+=== ...
+
+Il contient la méthode verifierAcces() qui est partagée entre les deux classes.
+
+=== ...
+
+La méthode connecter() dans Admin redéfinit celle de Utilisateur, mais continue d'utiliser la méthode du trait Securite pour vérifier l'accès avant la connexion.
+
+
+== Résumé des avantages des traits :
+
+=== Réutilisation du code : 
+
+Les traits permettent de partager des méthodes entre plusieurs classes sans utiliser l'héritage. 
+
+=== ...
+
+Cela permet de réutiliser du code sans les limitations de l'héritage simple.
+
+=== Modularité : 
+
+Ils permettent de découper le code en modules réutilisables, ce qui rend le code plus propre et plus facile à maintenir.
+
+=== Évite les conflits d'héritage : 
+
+Puisqu'en PHP, une classe ne peut hériter que d'une seule classe, les traits permettent d'éviter cette limitation en offrant une alternative flexible pour partager du code entre classes.
+
+=== Résolution de conflits : 
+
+En cas de conflit de noms entre des méthodes provenant de plusieurs traits, PHP fournit des mécanismes (comme insteadof et as) pour résoudre ces conflits proprement.
+
+//--------------------------------------------------------------------
+
+== Gestion avancée des erreurs et des exceptions (30 minutes)
+
+== Gestion des erreurs classiques avec try, catch, et finally : 
+
+Comment bien capturer et traiter les erreurs.
+
+//-------------------------------------------------------------------------------
+
+=== ...
+
+Capturer et traiter les erreurs est une pratique essentielle dans le développement logiciel pour garantir la fiabilité, la sécurité et la maintenabilité d'une application. 
+
+=== ...
+
+En PHP, les erreurs peuvent survenir pour plusieurs raisons : mauvaise entrée utilisateur, problèmes liés à la base de données, erreurs réseau, ou exceptions liées à des fichiers. 
+
+
+=== ...
+
+PHP offre plusieurs mécanismes pour capturer et traiter les erreurs de manière appropriée, notamment avec les exceptions et le système de gestion des erreurs.
+
+
+
+== Types d'erreurs en PHP :
+
+Avant d'examiner la manière de capturer et traiter les erreurs, il est important de comprendre les principaux types d'erreurs en PHP :
+
+=== Erreurs fatales : 
+
+Ces erreurs arrêtent immédiatement l'exécution du script. Exemple : appel à une fonction inexistante.
+
+=== Avertissements (warnings) :
+
+Des erreurs qui n'arrêtent pas l'exécution du script, mais qui signalent un problème. 
+
+Exemple : inclusion d'un fichier inexistant avec include().
+
+=== Notices : 
+
+Ce sont des erreurs mineures souvent liées à des variables non définies.
+
+=== Exceptions : 
+
+Utilisées pour capturer et gérer les erreurs de manière plus structurée.
+
+== Gestion des erreurs avec try, catch et finally (Exceptions) :
+
+
+Le mécanisme try-catch permet de capturer des erreurs sous forme d'exceptions et de les traiter de manière contrôlée. 
+
+=== ...
+
+Les exceptions peuvent être levées (générées) à tout moment dans le code avec throw, et capturées à l’aide de catch.
+
+Exemple de gestion d'exception avec try-catch :
+[source, php]
+----
+function division($num, $denom) {
+    if ($denom == 0) {
+        throw new Exception("Division par zéro interdite.");
+    }
+    return $num / $denom;
+}
+
+try {
+    echo division(10, 2); // Cela fonctionnera
+    echo division(10, 0); // Cela va générer une exception
+} catch (Exception $e) {
+    echo "Erreur : " . $e->getMessage(); // Capture et affichage de l'erreur
+}
+----
+
+
+=== Explication :
+
+=== throw new Exception : 
+
+Lève une exception lorsque le dénominateur est 0.
+
+=== try : 
+
+Bloc de code qui peut potentiellement lancer une exception.
+
+=== catch : 
+
+Capture l'exception et permet de la traiter sans arrêter l'exécution du script.
+
+
+=== $e->getMessage() :
+
+Récupère le message associé à l'exception levée.
+
+=== Bloc finally :
+
+Le bloc finally peut être utilisé pour exécuter du code indépendamment du fait qu'une exception ait été levée ou non. 
+
+=== ...
+
+Cela est utile pour nettoyer les ressources (comme fermer une connexion à une base de données ou un fichier).
+
+=== ...
+
+[source, php]
+----
+try {
+    // Code qui peut lever une exception
+    echo division(10, 0);
+} catch (Exception $e) {
+    echo "Erreur capturée : " . $e->getMessage();
+} finally {
+    echo "Opération terminée."; // Ce code est exécuté quoi qu'il arrive
+}
+----
+
+== Personnalisation des exceptions :
+
+PHP permet de créer des exceptions personnalisées pour gérer des cas d'erreurs spécifiques à votre application. 
+
+=== ...
+
+Cela permet de structurer le traitement des erreurs de manière plus propre et modulaire.
+
+=== Exemple d'exception personnalisée :
+[source, php]
+----
+class MonException extends Exception {
+    public function messagePersonnalise() {
+        return "Erreur personnalisée : " . $this->getMessage();
+    }
+}
+
+function testDivision($num, $denom) {
+    if ($denom == 0) {
+        throw new MonException("Division par zéro détectée !");
+    }
+    return $num / $denom;
+}
+
+try {
+    echo testDivision(10, 0);
+} catch (MonException $e) {
+    echo $e->messagePersonnalise(); // Affiche le message personnalisé
+}
+----
+
+=== Explication :
+
+MonException est une classe qui étend la classe Exception, vous permettant de personnaliser le comportement des exceptions.
+
+=== ...
+
+messagePersonnalise() est une méthode ajoutée à la classe MonException pour afficher un message d'erreur spécifique.
+
+
+== Types d'exceptions en PHP :
+
+En plus de la classe Exception standard, PHP propose plusieurs sous-classes pour gérer des types d'erreurs spécifiques. 
+
+=== ...
+
+Voici quelques exemples :
+
+=== PDOException : 
+
+Gère les erreurs liées à la base de données lors de l'utilisation de PDO.
+
+=== ErrorException :
+
+Permet de transformer des erreurs PHP standards en exceptions.
+
+=== InvalidArgumentException, OutOfRangeException, etc. : 
+
+Utilisées pour des cas spécifiques liés aux arguments ou aux opérations en dehors de la plage prévue.
+
+=== Exemple avec PDOException (gestion des erreurs de base de données) :
+
+[source, php]
+----
+try {
+    $dbh = new PDO('mysql:host=localhost;dbname=test', 'root', 'motdepasse');
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Active les exceptions PDO
+    $dbh->query("SELECT * FROM table_inexistante"); // Cela va lever une exception
+} catch (PDOException $e) {
+    echo "Erreur PDO : " . $e->getMessage();
+}
+----
+
+== Transformation des erreurs PHP en exceptions :
+
+Vous pouvez convertir les erreurs PHP traditionnelles en exceptions avec ErrorException. 
+
+=== ...
+
+Cela est utile pour unifier la gestion des erreurs et éviter d'utiliser des structures différentes pour chaque type d'erreur.
+
+=== Exemple de conversion d'erreurs en exceptions :
+
+[source, php]
+----
+function gestionErreurs($niveau, $message, $fichier, $ligne) {
+    throw new ErrorException($message, 0, $niveau, $fichier, $ligne);
+}
+
+set_error_handler("gestionErreurs");
+
+try {
+    // Ce code va générer un avertissement (division par zéro)
+    $result = 10 / 0;
+} catch (ErrorException $e) {
+    echo "Erreur capturée : " . $e->getMessage();
+}
+----
+
+=== Explication :
+
+set_error_handler() définit une fonction personnalisée pour gérer les erreurs PHP traditionnelles (comme les avertissements ou notices).
+
+=== ...
+
+ErrorException permet de convertir une erreur en exception, permettant ainsi d'utiliser un bloc try-catch pour gérer des erreurs PHP.
+
+
+== Bonnes pratiques pour la gestion des erreurs :
+
+
+=== ...
+
+Toujours capturer les erreurs critiques : 
+
+
+Utilisez des blocs try-catch pour capturer les erreurs qui pourraient entraîner l'arrêt de votre application, comme les erreurs de connexion à la base de données ou de lecture de fichiers.
+
+=== ...
+
+
+Ne pas abuser des exceptions : 
+
+
+=== ...
+
+Les exceptions doivent être utilisées pour capturer des situations exceptionnelles, et non pour gérer des flux de contrôle normaux dans votre programme. 
+
+=== ...
+
+Utilisez-les pour les erreurs graves ou inattendues.
+
+=== Protéger le code critique avec finally : 
+
+
+Utilisez le bloc finally pour assurer que certaines actions (fermeture de fichiers, libération de ressources) soient toujours effectuées, même si une exception a été levée.
+
+=== Ne pas masquer les erreurs : 
+
+Lorsque vous attrapez une exception, assurez-vous de bien journaliser ou afficher des informations utiles, au lieu de masquer l'erreur sans explication. 
+
+=== ...
+
+Cela facilite le débogage.
+
+=== Utiliser des exceptions personnalisées : 
+
+Créez vos propres exceptions pour les cas spécifiques à votre application. 
+
+=== ...
+
+Cela permet une gestion plus fine des erreurs et améliore la lisibilité de votre code.
+
+=== Gestion des erreurs utilisateur : 
+
+
+N'affichez jamais des messages d'erreur techniques à vos utilisateurs finaux (comme les détails de la base de données ou des fichiers). 
+
+
+En cas d'erreur, fournissez un message générique et journalisez les détails techniques pour l'administrateur du système.
+
+
+
+== Utilisation de error_log() pour journaliser les erreurs :
+
+En plus de capturer et d'afficher les erreurs, il est recommandé de journaliser les erreurs dans un fichier ou un système de gestion des journaux. 
+
+=== ...
+
+Vous pouvez utiliser la fonction error_log() pour cela.
+
+[source, php]
+----
+try {
+    echo division(10, 0);
+} catch (Exception $e) {
+    error_log($e->getMessage()); // Enregistre l'erreur dans le journal des erreurs
+    echo "Une erreur est survenue, veuillez réessayer plus tard.";
+}
+----
+
+
+//---------------------------------------------------------------------------------
+
+=== Exemple pratique : 
+
+Capturer une exception DivisionByZeroError dans une fonction de calcul.
+
+== Création de classes d'exception personnalisées :
+
+=== Exemple pratique : 
+
+Créer une classe MonException qui étend Exception et l'utiliser dans un scénario spécifique.
+
+=== Meilleures pratiques : 
+
+Où et quand lever des exceptions, comment structurer la gestion des erreurs pour une meilleure maintenabilité du code.
+
+
+//----------------------------------------------------------------------------
+
+Lever des exceptions est une pratique essentielle pour gérer les erreurs de manière contrôlée et prévisible dans un programme. 
+
+=== ...
+
+Cependant, il est crucial de savoir où et quand lever des exceptions pour ne pas surcharger le code, tout en garantissant que les erreurs sont correctement signalées et gérées. 
+
+=== ...
+
+Structurer la gestion des erreurs de manière cohérente permet d'améliorer la maintenabilité du code, en facilitant le débogage et en assurant une gestion des erreurs propre.
+
+== Quand lever des exceptions ?
+
+=== Conditions d'erreur inattendues ou critiques :
+
+Les exceptions doivent être levées lorsque le programme se retrouve dans une situation qu'il ne peut pas gérer normalement, et où continuer l'exécution entraînerait un comportement incorrect ou dangereux.
+
+=== Exemple : 
+
+Si une division par zéro est détectée, ou si un fichier nécessaire à l'exécution du programme est introuvable, il est judicieux de lever une exception.
+
+
+[source, php]
+----
+function division($numerateur, $denominateur) {
+    if ($denominateur == 0) {
+        throw new Exception("Division par zéro détectée.");
+    }
+    return $numerateur / $denominateur;
+}
+----
+
+
+=== Validation des entrées utilisateur :
+
+Lever des exceptions lorsque des entrées utilisateur sont invalides est une bonne pratique pour garantir l'intégrité des données.
+
+=== Exemple : 
+
+Si un utilisateur tente de saisir une date dans un format incorrect, ou soumet une valeur numérique dans un champ texte où une chaîne est attendue.
+
+=== ...
+
+[source, php]
+----
+function validerAge($age) {
+    if (!is_numeric($age) || $age < 0 || $age > 120) {
+        throw new InvalidArgumentException("L'âge doit être un nombre entre 0 et 120.");
+    }
+    return true;
+}
+----
+
+
+=== Problèmes liés aux ressources externes (fichiers, bases de données, API) :
+
+
+Lorsqu'une ressource externe échoue, telle qu'une connexion à une base de données ou une requête API qui ne retourne pas de réponse valide, une exception doit être levée.
+
+
+=== Exemple : 
+
+Si un fichier requis ne peut pas être ouvert, ou si une requête HTTP échoue, le programme doit lever une exception pour signaler que quelque chose ne va pas.
+
+=== ...
+[source, php]
+----
+function ouvrirFichier($nomFichier) {
+    if (!file_exists($nomFichier)) {
+        throw new Exception("Fichier non trouvé : " . $nomFichier);
+    }
+    return fopen($nomFichier, "r");
+}
+----
+
+
+=== État incorrect de l'application (logique métier) :
+
+Lorsqu'un processus se trouve dans un état non valide (par exemple, une commande sans produits ou un utilisateur sans permissions), il est pertinent de lever une exception.
+
+
+=== Exemple : 
+
+Si une commande est créée sans produits, le programme doit lever une exception pour garantir que la logique métier est respectée.
+
+
+[source, php]
+----
+class Commande {
+    private $produits = [];
+
+    public function ajouterProduit($produit) {
+        $this->produits[] = $produit;
+    }
+
+    public function finaliser() {
+        if (empty($this->produits)) {
+            throw new LogicException("Une commande ne peut pas être finalisée sans produits.");
+        }
+        echo "Commande finalisée avec succès.";
+    }
+}
+----
+
+
+=== Échec d'une opération irréversible :
+
+Dans certains cas, comme la suppression de données critiques ou une transaction financière, lever une exception est nécessaire si l'opération échoue afin d'annuler ou de signaler l'échec.
+
+[source, php]
+----
+function supprimerUtilisateur($userId) {
+    // Simuler un échec de suppression
+    if (!deleteFromDatabase($userId)) {
+        throw new RuntimeException("Impossible de supprimer l'utilisateur avec l'ID $userId.");
+    }
+}
+----
+
+
+== Où lever des exceptions ?
+
+===  Points d'entrée critiques (fonctions et méthodes) :
+
+Les exceptions doivent être levées dans les fonctions et méthodes responsables des actions importantes telles que :
+
+=== ...
+
+Interaction avec les bases de données (connexion, requêtes, transactions).
+
+=== ...
+
+Lecture et écriture de fichiers.
+
+=== ...
+
+Appels d'API externes.
+
+=== ...
+
+Validation des données d'entrée ou des paramètres.
+
+=== ...
+
+Ces points d'entrée sont souvent les endroits où des erreurs peuvent survenir de manière inattendue, et où il est nécessaire de signaler des erreurs de manière explicite.
+
+
+=== Couche d'accès aux données (DAO ou ORM) :
+
+Dans les systèmes qui utilisent des bases de données, lever des exceptions dans les opérations de lecture, d'écriture et de suppression est essentiel. 
+
+
+=== ...
+
+Cela permet de capturer les erreurs de base de données (comme les échecs de connexion ou les violations de contraintes) et de les traiter correctement.
+
+[source, php]
+----
+class UtilisateurDAO {
+    public function obtenirUtilisateurParId($id) {
+        $query = "SELECT * FROM utilisateurs WHERE id = :id";
+        $stmt = $this->connexion->prepare($query);
+
+        if (!$stmt->execute([':id' => $id])) {
+            throw new PDOException("Échec de la récupération de l'utilisateur avec ID $id.");
+        }
+
+        return $stmt->fetch();
+    }
+}
+----
+
+
+=== Couche de service (logique métier) :
+
+Les exceptions doivent également être levées dans la logique métier (services, contrôleurs) lorsque des conditions d'affaires spécifiques ne sont pas respectées. Cela permet de garantir que les règles métier sont appliquées correctement.
+
+[source, php]
+----
+class ServiceCommande {
+    public function traiterCommande($commande) {
+        if (!$commande->estValide()) {
+            throw new LogicException("La commande n'est pas valide.");
+        }
+        // Continuer avec le traitement
+    }
+}
+----
+
+
+== Structurer la gestion des erreurs pour une meilleure maintenabilité :
+
+=== Centraliser la gestion des erreurs :
+
+Il est recommandé de centraliser la gestion des erreurs dans des couches spécifiques, telles qu'un middleware (dans le cas des frameworks MVC) ou un gestionnaire d'erreurs global.
+
+=== ...
+
+
+Cela permet de séparer la logique métier des mécanismes de gestion des erreurs et d'éviter la duplication de code dans chaque partie de l'application.
+
+
+
+[source, php]
+----
+function gestionErreursGlobales(Exception $e) {
+    error_log($e->getMessage());
+    echo "Une erreur est survenue, veuillez contacter l'administrateur.";
+}
+
+set_exception_handler('gestionErreursGlobales')
+----
+
+
+== Utiliser des exceptions spécifiques :
+
+Créez des exceptions personnalisées pour des types d'erreurs spécifiques à votre domaine d'application. 
+
+=== ...
+
+Cela permet d'organiser plus clairement la gestion des erreurs.
+
+
+=== ...
+
+Par exemple, vous pouvez avoir une ExceptionConnexion, une ExceptionValidation, ou encore une ExceptionCommandeInvalide, chacune avec son propre message d'erreur et contexte.
+
+
+[source, php]
+----
+class ExceptionCommandeInvalide extends Exception {}
+
+class CommandeService {
+    public function validerCommande($commande) {
+        if (!$commande->estValide()) {
+            throw new ExceptionCommandeInvalide("Commande non valide : vérifiez les informations fournies.");
+        }
+    }
+}
+----
+
+
+=== Protéger les points critiques avec try-catch :
+
+Utilisez les blocs try-catch dans les points où des erreurs sont susceptibles de se produire et qui doivent être gérés proprement.
+
+
+=== ...
+
+Protégez les interactions avec les bases de données, les fichiers, ou les appels réseau dans des blocs try-catch pour capturer les erreurs et éviter que l'application ne s'arrête brutalement.
+
+=== ...
+
+
+[source, php]
+----
+try {
+    $commandeService->validerCommande($commande);
+} catch (ExceptionCommandeInvalide $e) {
+    echo "Erreur : " . $e->getMessage();
+    // Journaliser l'erreur ou notifier l'administrateur
+}
+----
+
+== Utiliser les exceptions pour contrôler le flux du programme :
+
+N'utilisez pas les exceptions pour gérer le flux normal d'une application. Elles doivent être réservées aux situations exceptionnelles.
+
+
+=== ...
+
+
+Si une situation peut être gérée sans lever d'exception (par exemple, renvoyer false ou null pour des vérifications logiques simples), cela peut souvent être préférable pour éviter de rendre le code inutilement complexe.
+
+
+[source, php]
+----
+// Mauvaise utilisation des exceptions pour gérer des vérifications normales
+try {
+    if (!validerEmail($email)) {
+        throw new Exception("Email invalide.");
+    }
+} catch (Exception $e) {
+    // Ne pas utiliser d'exception pour des validations simples
+    echo $e->getMessage();
+}
+----
+
+
+== Journalisation des erreurs :
+
+Utilisez error_log() ou un système de journalisation comme Monolog pour enregistrer les erreurs dans un fichier ou une base de données. 
+
+=== ...
+Cela permet aux administrateurs et développeurs de suivre les erreurs sans afficher de détails sensibles aux utilisateurs.
+
+[source, php]
+----
+try {
+    // Code à risque
+} catch (Exception $e) {
+    error_log($e->getMessage()); // Journaliser l'erreur
+    echo "Une erreur est survenue."; // Message générique pour l'utilisateur
+}
+----
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------
+
+
+== Type Hinting et Déclarations strictes (30 minutes)
+
+=== Type Hinting : 
+
+Assurer la robustesse du code en spécifiant les types des arguments et des valeurs de retour des méthodes et fonctions.
+
+
+=== ...
+
+
+//--------------------
+
+Assurer la robustesse du code consiste à écrire des fonctions et des méthodes qui sont à la fois fiables, prévisibles et faciles à maintenir. 
+
+=== ...
+
+L'une des meilleures façons de garantir cela en PHP est de spécifier les types des arguments et des valeurs de retour des méthodes et fonctions. 
+
+=== ...
+
+Cela permet de capturer rapidement des erreurs de type, d'améliorer la lisibilité du code, et d'assurer que les données manipulées sont conformes aux attentes du programme.
+
+== Typage en PHP :
+
+Depuis PHP 7 et avec des améliorations continues dans PHP 8, il est possible de déclarer des types pour les arguments et les valeurs de retour des fonctions et méthodes. 
+
+
+=== ...
+
+Le typage en PHP peut inclure des types scalaires (comme int, string, etc.), des types composites (comme array, object), et des types d'objet (instances de classes).
+
+=== Déclaration des types des arguments :
+
+Spécifier les types des arguments permet de garantir que les valeurs transmises à une fonction ou méthode sont du type attendu. 
+
+
+Si un type incorrect est fourni, PHP générera une erreur de type avant d'exécuter le code, ce qui permet d'attraper des erreurs potentielles à l'avance.
+
+=== Exemple de typage des arguments :
+
+[source, php]
+----
+function addition(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo addition(5, 10); // Affichera 15
+// echo addition(5, "10"); // Erreur de type en raison du second argument de type string
+----
+
+=== Explication :
+
+
+int $a, int $b : Spécifie que les deux arguments doivent être des entiers (int).
+
+
+Si un type différent est passé (par exemple une chaîne de caractères), PHP générera une erreur et ne continuera pas l'exécution de la fonction.
+
+
+== Types scalaires et composites :
+
+En plus des types simples comme int, string, float, ou bool, PHP permet également de typer les tableaux, les objets, et d'autres types plus complexes.
+
+=== Exemple avec des tableaux et des objets :
+[source, php]
+----
+class Utilisateur {
+    public $nom;
+
+    public function __construct(string $nom) {
+        $this->nom = $nom;
+    }
+}
+
+function afficherNoms(array $utilisateurs): void {
+    foreach ($utilisateurs as $utilisateur) {
+        echo $utilisateur->nom . "<br>";
+    }
+}
+
+$utilisateur1 = new Utilisateur("Alice");
+$utilisateur2 = new Utilisateur("Bob");
+
+afficherNoms([$utilisateur1, $utilisateur2]);
+// Affichera :
+// Alice
+// Bob
+----
+
+
+=== Explication :
+
+=== array $utilisateurs : 
+
+Spécifie que l'argument doit être un tableau d'objets Utilisateur.
+
+=== void : 
+
+Indique que la fonction ne retourne rien. Ce type est utilisé lorsque la fonction ne doit pas produire de valeur de retour.
+
+
+=== Déclaration des types de retour :
+
+Spécifier les types de retour des fonctions et méthodes est tout aussi important que de typer les arguments. 
+
+=== ...
+
+Cela permet d'assurer que la fonction retourne toujours une valeur du type attendu, ce qui évite des incohérences ou des erreurs lors de l'utilisation des résultats de cette fonction.
+
+=== Exemple de typage de retour :
+[source, php]
+----
+function concatenation(string $a, string $b): string {
+    return $a . ' ' . $b;
+}
+
+echo concatenation("Bonjour", "Monde"); // Affichera "Bonjour Monde"
+----
+
+
+=== Explication :
+
+: string après la déclaration de la fonction indique que la fonction doit retourner une chaîne de caractères. 
+
+
+=== ...
+
+Si le code tentait de retourner un type différent, PHP générerait une erreur.
+
+
+
+== Types nullables :
+
+Parfois, une fonction peut retourner soit une valeur d'un type particulier, soit null. 
+
+=== ...
+
+PHP permet de spécifier des types nullables en utilisant un point d'interrogation (?) devant le type.
+
+=== Exemple de type nullable :
+
+[source, php]
+----
+function rechercherUtilisateur(int $id): ?Utilisateur {
+    // Simuler une recherche de base de données
+    if ($id === 1) {
+        return new Utilisateur("Alice");
+    }
+    return null; // Aucun utilisateur trouvé
+}
+
+$resultat = rechercherUtilisateur(2);
+if ($resultat === null) {
+    echo "Utilisateur non trouvé.";
+} else {
+    echo "Utilisateur trouvé : " . $resultat->nom;
+}
+----
+
+
+=== Explication :
+
+=== ?Utilisateur : 
+
+Indique que la fonction peut retourner soit un objet Utilisateur, soit null.
+
+=== ...
+
+Cela permet de capturer le fait que la recherche peut échouer et qu'il est nécessaire de gérer le cas où null est retourné.
+
+=== Typage strict avec declare(strict_types=1) :
+
+Par défaut, PHP effectue une conversion automatique (ou "casting") des types si les types passés aux fonctions ou retournés ne correspondent pas exactement à ce qui est attendu. 
+
+=== ...
+
+Par exemple, passer une chaîne de caractères contenant un nombre à une fonction qui attend un entier peut fonctionner.
+
+=== ...
+
+
+Pour rendre le typage plus strict et éviter toute conversion implicite, vous pouvez activer le mode strict avec declare(strict_types=1) en haut de votre fichier. 
+
+=== ...
+
+Cela garantit que seules des valeurs du type exact spécifié seront acceptées.
+
+=== Exemple avec mode strict :
+[source, php]
+----
+declare(strict_types=1);
+
+function multiplier(int $a, int $b): int {
+    return $a * $b;
+}
+
+echo multiplier(3, 4); // Affichera 12
+// echo multiplier(3, "4"); // Provoquera une erreur car "4" est une chaîne
+----
+
+=== Typage avec des classes et interfaces :
+
+Vous pouvez également spécifier des types pour les objets, les interfaces, et les classes abstraites. 
+
+=== ...
+
+Cela garantit que les objets passés aux fonctions ou retournés respectent une certaine structure ou implémentation.
+
+=== Exemple avec des interfaces :
+
+[source, php]
+----
+interface Calculatrice {
+    public function addition(int $a, int $b): int;
+}
+
+class MaCalculatrice implements Calculatrice {
+    public function addition(int $a, int $b): int {
+        return $a + $b;
+    }
+}
+
+function utiliserCalculatrice(Calculatrice $calc) {
+    echo $calc->addition(5, 3);
+}
+
+$maCalc = new MaCalculatrice();
+utiliserCalculatrice($maCalc); // Affichera 8
+----
+
+=== Explication :
+
+
+=== Calculatrice $calc : 
+
+Indique que la fonction attend un objet qui implémente l'interface Calculatrice.
+
+
+Cela permet de s'assurer que les objets passés à la fonction respectent un contrat précis.
+
+
+== Union Types (PHP 8) :
+
+PHP 8 a introduit les types d'union, qui permettent de spécifier plusieurs types possibles pour un argument ou une valeur de retour.
+
+=== Exemple avec types d'union :
+
+[source, php]
+----
+function afficher($valeur): int|string {
+    if (is_int($valeur)) {
+        return $valeur;
+    } elseif (is_string($valeur)) {
+        return $valeur;
+    }
+    throw new InvalidArgumentException("Valeur doit être un entier ou une chaîne.");
+}
+
+echo afficher(123);    // Affichera 123
+echo afficher("Test"); // Affichera Test
+// echo afficher(3.14); // Provoquera une exception
+----
+
+== Explication :
+
+=== int|string : 
+
+Permet à l'argument ou au retour de la fonction d'être soit un entier, soit une chaîne de caractères. 
+
+=== ...
+
+Cela améliore la flexibilité tout en garantissant une certaine robustesse dans la gestion des types.
+
+
+== Avantages de la spécification des types :
+
+=== Détection précoce des erreurs : 
+
+En spécifiant des types, PHP peut détecter les erreurs de type avant même que le code ne soit exécuté.
+
+=== Documentation claire : 
+
+Les types dans les signatures de fonction agissent comme une documentation automatique, aidant les développeurs à comprendre immédiatement quelles valeurs sont attendues ou retournées.
+
+
+=== Amélioration de la maintenabilité : 
+
+Les fonctions et méthodes avec des types spécifiés sont plus prévisibles, ce qui facilite la maintenance du code sur le long terme.
+
+=== Sécurité accrue : 
+
+
+Le typage strict réduit le risque d'erreurs subtiles liées à la conversion implicite des types.
+
+
+
+// end of type hinting ---------------
+
+=== Les nouveautés de PHP 7+ :
+
+=== ...
+
+Type return (déclaration du type de retour d'une fonction).
+
+=== ...
+
+
+En PHP, spécifier le type de retour d'une fonction ou d'une méthode permet d'assurer qu'une fonction retourne toujours une valeur d'un type précis. 
+
+
+=== ...
+
+Cela renforce la robustesse du code, en évitant les retours inattendus ou incorrects, et rend le comportement des fonctions plus explicite et prévisible.
+
+
+== Syntaxe de la déclaration du type de retour
+
+
+Pour déclarer le type de retour d'une fonction, on ajoute un deux-points : après la liste des paramètres, suivi du type de retour attendu. 
+
+
+=== ...
+
+PHP vérifiera alors que la valeur retournée correspond au type spécifié.
+
+=== Exemple simple de type de retour :
+
+[source, php]
+----
+function addition(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo addition(5, 3);  // Affichera 8
+----
+
+
+=== Explication :
+
+=== : int 
+
+indique que la fonction addition() doit retourner un entier (int).
+
+=== ...
+
+Si la fonction retourne un type différent, PHP générera une erreur de type.
+
+== Types de retour supportés
+
+PHP prend en charge plusieurs types de retour, notamment :
+
+=== Types scalaires : 
+
+int, float, string, bool
+
+=== Types composites : 
+
+array, object
+
+=== Types d'objet : 
+
+Noms de classes ou interfaces spécifiques
+
+=== void : 
+
+Utilisé lorsque la fonction ne doit retourner aucune valeur
+
+=== Types nullables : 
+
+Combinaison d'un type avec null (avec ? avant le type)
+
+=== Types d'union (à partir de PHP 8) : 
+
+Combinaison de plusieurs types
+
+== Exemples de types de retour courants
+
+=== Type de retour scalaire :
+
+[source, php]
+----
+function multiplier(float $a, float $b): float {
+    return $a * $b;
+}
+
+echo multiplier(2.5, 4.0);  // Affichera 10.0
+----
+
+=== ...
+
+Dans cet exemple, la fonction multiplier() doit retourner un nombre flottant (float).
+
+=== Type de retour void :
+
+Une fonction avec un type de retour void ne doit rien retourner, pas même null. Si vous essayez de retourner une valeur, PHP générera une erreur.
+
+=== ...
+
+[source, php]
+----
+function afficherMessage(string $message): void {
+    echo $message;
+}
+
+afficherMessage("Bonjour !");  // Affichera "Bonjour !"
+----
+
+=== ...
+
+Ici, la fonction afficherMessage() ne retourne aucune valeur, elle se contente d'afficher un message.
+
+=== Type de retour d'un tableau (array) :
+
+[source, php]
+----
+function getNombres(): array {
+    return [1, 2, 3, 4, 5];
+}
+
+print_r(getNombres());  // Affichera Array ( [0] => 1 [1] => 2 [2] => 3 [3] => 4 [4] => 5 )
+----
+
+=== ...
+
+La fonction getNombres() retourne un tableau, spécifié par le type array.
+
+=== Type de retour d'un objet :
+
+
+Vous pouvez spécifier qu'une fonction retourne un objet d'une certaine classe ou interface.
+
+[source, php]
+----
+class Utilisateur {
+    public $nom;
+
+    public function __construct(string $nom) {
+        $this->nom = $nom;
+    }
+}
+
+function creerUtilisateur(string $nom): Utilisateur {
+    return new Utilisateur($nom);
+}
+
+$user = creerUtilisateur("Alice");
+echo $user->nom;  // Affichera "Alice"
+----
+
+=== ...
+
+La fonction creerUtilisateur() doit retourner un objet de la classe Utilisateur.
+
+
+== Types nullables (?)
+
+Un type nullable permet à une fonction de retourner soit une valeur du type spécifié, soit null. 
+
+=== ...
+
+Cela est utile lorsque le retour de null est une possibilité.
+
+=== Exemple de type nullable :
+
+
+[source, php]
+----
+function chercherUtilisateur(int $id): ?Utilisateur {
+    if ($id === 1) {
+        return new Utilisateur("Alice");
+    }
+    return null;
+}
+
+$utilisateur = chercherUtilisateur(1);
+if ($utilisateur === null) {
+    echo "Utilisateur non trouvé.";
+} else {
+    echo "Utilisateur trouvé : " . $utilisateur->nom;
+}
+----
+
+=== ...
+
+
+?Utilisateur signifie que la fonction peut retourner soit un objet de la classe Utilisateur, soit null.
+
+
+== Types d'union (PHP 8)
+
+Les types d'union permettent de déclarer que le retour d'une fonction peut être de plusieurs types différents. 
+
+=== ...
+
+Cela offre plus de flexibilité tout en maintenant un contrôle sur les types retournés.
+
+=== Exemple avec types d'union :
+
+[source, php]
+----
+function retournerValeur(int|string $valeur): int|string {
+    return $valeur;
+}
+
+echo retournerValeur(10);    // Affichera 10
+echo retournerValeur("Texte"); // Affichera "Texte"
+----
+
+
+Dans cet exemple, la fonction retournerValeur() peut retourner soit un entier (int), soit une chaîne de caractères (string), ce qui est précisé avec int|string.
+
+== Avantages des types de retour
+
+=== Détection précoce des erreurs : 
+
+En spécifiant les types de retour, PHP peut signaler des erreurs de type avant même que le code ne soit exécuté, ce qui réduit les bugs potentiels.
+
+
+=== Amélioration de la lisibilité et de la maintenabilité : 
+
+Le typage explicite du retour d'une fonction permet aux autres développeurs de comprendre immédiatement ce qu'une fonction est censée retourner.
+
+=== Encapsulation des contrats : 
+
+Le type de retour garantit que chaque fonction respecte un contrat défini (par exemple, une fonction de base de données doit toujours retourner un tableau ou un objet spécifique).
+
+
+
+== Erreurs communes liées aux types de retour
+
+=== Retourner un type incompatible :
+
+Si une fonction retourne un type qui ne correspond pas à celui déclaré, PHP générera une erreur fatale.
+
+=== ...
+
+[source, php]
+----
+function division(int $a, int $b): float {
+    if ($b === 0) {
+        return "Division par zéro"; // Cela génèrera une erreur car le retour doit être un float
+    }
+    return $a / $b;
+}
+----
+
+=== Omettre le type nullable : 
+
+Si une fonction est censée retourner null dans certains cas, mais que cela n'est pas explicitement autorisé dans la signature de la fonction, une erreur sera générée.
+
+=== ...
+
+[source, php]
+----
+function chercherNom(int $id): string {
+    if ($id === 0) {
+        return null;  // Erreur, car le type de retour doit être une chaîne (string), pas null
+    }
+    return "Alice";
+}
+----
+
+== Utilisation du typage strict (declare(strict_types=1))
+
+Le typage strict empêche les conversions implicites des types et exige que les valeurs fournies et retournées correspondent exactement aux types déclarés. 
+
+=== ...
+
+Cela renforce encore la robustesse du code.
+
+=== Exemple avec typage strict :
+
+[source, php]
+----
+declare(strict_types=1);
+
+function carre(int $nombre): int {
+    return $nombre * $nombre;
+}
+
+echo carre(4);  // Affichera 16
+// echo carre("4");  // Erreur car "4" est une chaîne et non un entier
+----
+
+
+=== ...
+
+Avec declare(strict_types=1), PHP n'autorise plus les conversions automatiques entre types incompatibles, et une erreur sera levée si un type incorrect est utilisé.
+
+
+// -------------------------------------------------
+
+== Types scalaires stricts (entiers, flottants, etc.).
+
+
+Les types scalaires stricts en PHP se réfèrent à l'utilisation rigoureuse des types de données de base comme les entiers (int), flottants (float), chaînes de caractères (string), et booléens (bool) dans les fonctions et méthodes. 
+
+
+=== ...
+
+L'objectif est de s'assurer que les fonctions reçoivent des données du type exact déclaré et non une version "convertie" de ces types, ce qui améliore la robustesse et la sécurité du code.
+
+=== Typage en mode strict :
+
+
+En PHP, le typage est généralement flexible. 
+
+=== ...
+
+Par exemple, vous pouvez passer une chaîne de caractères représentant un nombre à une fonction qui attend un entier, et PHP convertira automatiquement la chaîne en entier. 
+
+
+=== ...
+
+Cependant, cela peut entraîner des comportements inattendus ou des erreurs difficiles à déboguer. 
+
+
+=== ...
+
+Le typage strict est une solution qui force PHP à respecter exactement les types déclarés, en empêchant les conversions implicites entre types.
+
+== Activation du typage strict :
+
+Le mode strict est activé avec la déclaration declare(strict_types=1) au début d'un fichier PHP. 
+
+=== ...
+
+Cela oblige PHP à respecter les types spécifiés dans les signatures de fonctions pour les arguments et les valeurs de retour.
+
+[source, php]
+----
+declare(strict_types=1);
+----
+
+
+== Types scalaires en PHP :
+
+Les types scalaires sont les types de données de base que vous pouvez utiliser dans les signatures de fonctions, à savoir :
+
+=== int : 
+
+Représente un entier (par exemple, 5, 100, -20).
+
+=== float : 
+
+Représente un nombre à virgule flottante (par exemple, 3.14, -0.5).
+
+=== string : 
+
+Représente une chaîne de caractères (par exemple, "Bonjour", "123").
+
+=== bool : 
+
+Représente une valeur booléenne, soit true, soit false.
+
+== Exemple de typage strict avec des types scalaires :
+[source, php]
+----
+declare(strict_types=1);
+
+function additionner(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo additionner(5, 10);  // Affichera 15
+// echo additionner(5, "10");  // Provoquera une erreur fatale car "10" est une chaîne
+----
+
+=== Explication :
+
+=== declare(strict_types=1) : 
+
+Active le typage strict pour tout le fichier PHP.
+
+La fonction additionner() attend deux paramètres de type int. 
+
+=== ...
+
+En mode strict, si un type incorrect (comme une chaîne) est passé, PHP lèvera une erreur fatale.
+
+
+== Typage strict vs typage flexible :
+
+En mode non strict (le mode par défaut), PHP autorise les conversions implicites entre types. 
+
+=== ...
+
+Cela signifie que PHP convertira automatiquement une chaîne contenant un nombre en entier, ou une chaîne vide en false, et ainsi de suite.
+
+=== Exemple sans typage strict (par défaut) :
+
+[source, php]
+----
+function multiplier(int $a, int $b): int {
+    return $a * $b;
+}
+
+echo multiplier(3, "4");  // Affichera 12, la chaîne "4" est convertie en entier
+----
+
+
+En mode strict, cela provoquerait une erreur :
+
+=== ...
+
+[source, php]
+----
+declare(strict_types=1);
+
+function multiplier(int $a, int $b): int {
+    return $a * $b;
+}
+
+echo multiplier(3, "4");  // Provoquera une erreur car "4" est une chaîne, pas un entier
+----
+
+
+
+== Types scalaires stricts avec valeurs de retour :
+
+
+Le typage strict s'applique également aux valeurs de retour des fonctions. 
+
+=== ...
+
+Si la fonction doit retourner un type spécifique, toute tentative de retour d'un type différent entraînera une erreur.
+
+=== Exemple avec type de retour strict :
+
+[source, php]
+----
+declare(strict_types=1);
+
+function diviser(float $a, float $b): float {
+    if ($b === 0.0) {
+        throw new Exception("Division par zéro.");
+    }
+    return $a / $b;
+}
+
+echo diviser(10.0, 2.0);  // Affichera 5.0
+// echo diviser(10, 0);  // Provoquera une erreur si l'un des arguments n'est pas un flottant
+----
+
+
+== Gestion des types scalaires stricts dans les classes :
+
+
+Le typage strict fonctionne également dans les méthodes de classe. Vous pouvez définir des types pour les arguments des méthodes ainsi que pour leurs valeurs de retour.
+
+=== Exemple avec une classe :
+
+[source, php]
+----
+declare(strict_types=1);
+
+class Calculatrice {
+    public function ajouter(int $a, int $b): int {
+        return $a + $b;
+    }
+
+    public function diviser(float $a, float $b): float {
+        if ($b === 0.0) {
+            throw new Exception("Division par zéro.");
+        }
+        return $a / $b;
+    }
+}
+
+$calc = new Calculatrice();
+echo $calc->ajouter(5, 10);  // Affichera 15
+echo $calc->diviser(10.0, 2.0);  // Affichera 5.0
+----
+
+
+== Avantages du typage strict des types scalaires :
+
+=== Détection précoce des erreurs : 
+
+Le typage strict permet d'attraper des erreurs de type avant que le programme ne soit exécuté. Cela améliore la robustesse du code en réduisant les bugs liés à des types inattendus.
+
+=== Amélioration de la lisibilité et de la maintenabilité : 
+
+Le typage strict permet de rendre les fonctions plus prévisibles. 
+
+Les développeurs qui lisent le code savent exactement quels types d'arguments une fonction attend et quel type elle retourne.
+
+=== Sécurité renforcée : 
+
+Le typage strict empêche les conversions implicites entre types, ce qui réduit le risque de comportements inattendus ou de failles de sécurité potentielles dans le traitement des données.
+
+=== Optimisation des performances : 
+
+En spécifiant les types, PHP n'a pas besoin de réaliser des conversions automatiques, ce qui peut améliorer les performances dans certains cas.
+
+== Limites du typage strict :
+
+=== Incompatibilité avec du code flexible : 
+
+Le typage strict peut rendre certaines fonctions moins flexibles, notamment lorsqu'elles doivent manipuler plusieurs types de données. 
+
+=== ...
+
+Cependant, PHP 8 a introduit les types d'union pour gérer cela (par exemple, int|string).
+
+=== Erreur potentielle en cas de valeur inattendue : 
+
+Si vous oubliez de traiter certains cas (comme null), PHP générera une erreur si une valeur du mauvais type est retournée ou passée en argument.
+
+== Cas d'utilisation du typage strict :
+
+=== Opérations mathématiques : 
+
+Lorsque vous travaillez avec des nombres, le typage strict garantit que les calculs sont effectués avec les bons types (int ou float).
+
+=== Fonctions de validation : 
+
+Les fonctions qui valident des entrées utilisateur peuvent bénéficier du typage strict pour s'assurer que les valeurs sont du bon type avant de les traiter.
+
+
+=== Gestion de l'API : 
+
+Si vous développez une API ou une bibliothèque utilisée par d'autres développeurs, le typage strict peut garantir que votre interface reste cohérente et prévisible.
+
+
+==  Exemple avancé avec différentes combinaisons de types scalaires stricts :
+
+[source, php]
+----
+declare(strict_types=1);
+
+class Formulaire {
+    public function validerChaine(string $texte): bool {
+        return !empty($texte);
+    }
+
+    public function calculerTotal(float $prixUnitaire, int $quantite): float {
+        return $prixUnitaire * $quantite;
+    }
+
+    public function envoyerReponse(bool $success): string {
+        return $success ? "Validation réussie" : "Validation échouée";
+    }
+}
+
+$form = new Formulaire();
+echo $form->validerChaine("Test");  // Affichera 1 (true)
+echo $form->calculerTotal(19.99, 3);  // Affichera 59.97
+echo $form->envoyerReponse(true);  // Affichera "Validation réussie"
+----
+
+== Explication :
+
+validerChaine() attend une chaîne de caractères (string) et retourne un booléen (bool).
+
+=== ...
+
+calculerTotal() prend un flottant et un entier, et retourne un flottant (float).
+
+
+=== ...
+
+envoyerReponse() prend un booléen et retourne une chaîne (string).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------------------------------------------------------------------
+
+

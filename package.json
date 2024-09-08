@@ -1,0 +1,16 @@
+{
+  "name": "php-advanced-efrei",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "html": "npx asciidoctor-revealjs"
+  },
+  "devDependencies": {
+    "@asciidoctor/reveal.js": "^5.1.0",
+    "asciidoctor": "^3.0.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
