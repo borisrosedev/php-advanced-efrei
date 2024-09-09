@@ -829,7 +829,7 @@ Supposons que nous ayons une classe Voiture qui représente les caractéristique
 [source, php]
 ----
 // Classe parente
-class Care {
+class Car {
 
     public $brand;
     public $model;
@@ -848,8 +848,8 @@ class Care {
     }
 }
 
-// Classe enfant qui hérite de Voiture
-class ElectricCar extends Voiture {
+// Classe enfant qui hérite de Car
+class ElectricCar extends Car {
     public $autonomie;
 
     // Constructeur qui initialise également l'autonomie spécifique aux voitures électriques

@@ -712,7 +712,7 @@ class ClasseEnfant extends ClasseParente {
     // Propriétés et méthodes supplémentaires ou modifiées
 }</code></pre></div></div></div></section><section id="_exemple_dhéritage_simple"><h2>Exemple d&#8217;héritage simple :</h2><div class="slide-content"><div class="paragraph"><p>Supposons que nous ayons une classe Voiture qui représente les caractéristiques de base d&#8217;une voiture, et nous voulons créer une classe VoitureElectrique qui hérite de cette classe tout en ajoutant des fonctionnalités supplémentaires spécifiques aux voitures électriques.</p></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-php hljs" data-noescape="true" data-lang="php">// Classe parente
-class Care {
+class Car {
 
     public $brand;
     public $model;
@@ -731,8 +731,8 @@ class Care {
     }
 }
 
-// Classe enfant qui hérite de Voiture
-class ElectricCar extends Voiture {
+// Classe enfant qui hérite de Car
+class ElectricCar extends Car {
     public $autonomie;
 
     // Constructeur qui initialise également l'autonomie spécifique aux voitures électriques

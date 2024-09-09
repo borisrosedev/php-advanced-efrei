@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root   #changez !!!!   
+      MYSQL_DATABASE: efrei   #changez !!!!      
+      MYSQL_USER: efrei    #changez !!!!                 
+      MYSQL_PASSWORD: efrei     #changez !!!!     
+    ports:
+      - "3306:3306"                       
+    volumes:
+      - mysql_data:/var/lib/mysql    
+      - ./sql-scripts:/docker-entrypoint-initdb.d      
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql                  
+      MYSQL_ROOT_PASSWORD: root   #changez !!!!   
+    ports:
+      - "8080:80"                         
+    depends_on:
+      - mysql                            
+
+volumes:
+  mysql_data:
