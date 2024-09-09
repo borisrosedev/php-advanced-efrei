@@ -6,7 +6,7 @@ services:
     container_name: mysql_db
     environment:
       MYSQL_ROOT_PASSWORD: root   #changez !!!!   
-      MYSQL_DATABASE: efrei   #changez !!!!      
+      MYSQL_DATABASE: it_creator   #changez !!!!      
       MYSQL_USER: efrei    #changez !!!!                 
       MYSQL_PASSWORD: efrei     #changez !!!!     
     ports:
