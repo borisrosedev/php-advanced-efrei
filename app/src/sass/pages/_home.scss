@@ -1,0 +1,52 @@
+@use "../abstracts/mixins";
+
+.home-main {
+  flex-direction: column;
+  padding: 20px;
+  &__section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__introduction-section {
+    height: 100vh;
+    @include mixins.flex-box(center, center, column);
+    & > section {
+      p {
+        text-align: center;
+        margin-block: 30px;
+      }
+
+      @include mixins.flex-box(center, center, column);
+    }
+  }
+
+  &__functionalities-section {
+    flex-direction: column;
+    & > section {
+      margin-block: 30px;
+      @include mixins.flex-box(center);
+      & > section:last-of-type {
+        padding-inline: 30px;
+        & > section {
+          margin-block: 10px;
+        }
+      }
+    }
+  }
+
+  &__partners-section {
+    margin-top: 30px;
+    flex-direction: column;
+    h2 {
+      align-self: center;
+    }
+    ul {
+      margin-block: 30px;
+      @include mixins.flex-box(space-evenly, center, row);
+      figure {
+        @include mixins.circular-figure(60px);
+      }
+    }
+  }
+}

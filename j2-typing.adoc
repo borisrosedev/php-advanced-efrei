@@ -1,0 +1,894 @@
+== J2
+
+=== Objectifs de la session 
+
+* Comprendre l'intérêt du Typage en PHP afin notamment d'éviter erreurs et failles de sécurité
+* Apprendre des Designs Patterns afin de mieux concevoir son logiciel
+
+
+== Type Hinting et Déclarations strictes 
+
+=== Type Hinting : 
+
+Assurer la robustesse du code en spécifiant les types des arguments et des valeurs de retour des méthodes et fonctions.
+
+
+=== ...
+
+
+//--------------------
+
+Assurer la robustesse du code consiste à écrire des fonctions et des méthodes qui sont à la fois fiables, prévisibles et faciles à maintenir. 
+
+=== ...
+
+L'une des meilleures façons de garantir cela en PHP est de spécifier les types des arguments et des valeurs de retour des méthodes et fonctions. 
+
+=== ...
+
+Cela permet de capturer rapidement des erreurs de type, d'améliorer la lisibilité du code, et d'assurer que les données manipulées sont conformes aux attentes du programme.
+
+== Typage en PHP :
+
+Depuis PHP 7 et avec des améliorations continues dans PHP 8, il est possible de déclarer des types pour les arguments et les valeurs de retour des fonctions et méthodes. 
+
+
+=== ...
+
+Le typage en PHP peut inclure des types scalaires (comme int, string, etc.), des types composites (comme array, object), et des types d'objet (instances de classes).
+
+=== Déclaration des types des arguments :
+
+Spécifier les types des arguments permet de garantir que les valeurs transmises à une fonction ou méthode sont du type attendu. 
+
+=== ...
+
+Si un type incorrect est fourni, PHP générera une erreur de type avant d'exécuter le code, ce qui permet d'attraper des erreurs potentielles à l'avance.
+
+=== Exemple de typage des arguments :
+
+[source, php]
+----
+function addition(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo addition(5, 10); // Affichera 15
+// echo addition(5, "10"); // Erreur de type en raison du second argument de type string
+----
+
+=== Explication :
+
+
+int $a, int $b : Spécifie que les deux arguments doivent être des entiers (int).
+
+
+Si un type différent est passé (par exemple une chaîne de caractères), PHP générera une erreur et ne continuera pas l'exécution de la fonction.
+
+
+== Types scalaires et composites :
+
+En plus des types simples comme int, string, float, ou bool, PHP permet également de typer les tableaux, les objets, et d'autres types plus complexes.
+
+=== Exemple avec des tableaux et des objets :
+[source, php]
+----
+class Utilisateur {
+    public $nom;
+
+    public function __construct(string $nom) {
+        $this->nom = $nom;
+    }
+}
+
+function afficherNoms(array $utilisateurs): void {
+    foreach ($utilisateurs as $utilisateur) {
+        echo $utilisateur->nom . "<br>";
+    }
+}
+
+$utilisateur1 = new Utilisateur("Alice");
+$utilisateur2 = new Utilisateur("Bob");
+
+afficherNoms([$utilisateur1, $utilisateur2]);
+// Affichera :
+// Alice
+// Bob
+----
+
+
+=== Explication :
+
+=== array $utilisateurs : 
+
+Spécifie que l'argument doit être un tableau d'objets Utilisateur.
+
+=== void : 
+
+Indique que la fonction ne retourne rien. Ce type est utilisé lorsque la fonction ne doit pas produire de valeur de retour.
+
+
+=== Déclaration des types de retour :
+
+Spécifier les types de retour des fonctions et méthodes est tout aussi important que de typer les arguments. 
+
+=== ...
+
+Cela permet d'assurer que la fonction retourne toujours une valeur du type attendu, ce qui évite des incohérences ou des erreurs lors de l'utilisation des résultats de cette fonction.
+
+=== Exemple de typage de retour :
+[source, php]
+----
+function concatenation(string $a, string $b): string {
+    return $a . ' ' . $b;
+}
+
+echo concatenation("Bonjour", "Monde"); // Affichera "Bonjour Monde"
+----
+
+
+=== Explication :
+
+: string après la déclaration de la fonction indique que la fonction doit retourner une chaîne de caractères. 
+
+
+=== ...
+
+Si le code tentait de retourner un type différent, PHP générerait une erreur.
+
+
+
+== Types nullables :
+
+Parfois, une fonction peut retourner soit une valeur d'un type particulier, soit null. 
+
+=== ...
+
+PHP permet de spécifier des types nullables en utilisant un point d'interrogation (?) devant le type.
+
+=== Exemple de type nullable :
+
+[source, php]
+----
+function rechercherUtilisateur(int $id): ?Utilisateur {
+    // Simuler une recherche de base de données
+    if ($id === 1) {
+        return new Utilisateur("Alice");
+    }
+    return null; // Aucun utilisateur trouvé
+}
+
+$resultat = rechercherUtilisateur(2);
+if ($resultat === null) {
+    echo "Utilisateur non trouvé.";
+} else {
+    echo "Utilisateur trouvé : " . $resultat->nom;
+}
+----
+
+
+=== Explication :
+
+=== ?Utilisateur : 
+
+Indique que la fonction peut retourner soit un objet Utilisateur, soit null.
+
+=== ...
+
+Cela permet de capturer le fait que la recherche peut échouer et qu'il est nécessaire de gérer le cas où null est retourné.
+
+=== Typage strict avec declare(strict_types=1) :
+
+Par défaut, PHP effectue une conversion automatique (ou "casting") des types si les types passés aux fonctions ou retournés ne correspondent pas exactement à ce qui est attendu. 
+
+=== ...
+
+Par exemple, passer une chaîne de caractères contenant un nombre à une fonction qui attend un entier peut fonctionner.
+
+=== ...
+
+
+Pour rendre le typage plus strict et éviter toute conversion implicite, vous pouvez activer le mode strict avec declare(strict_types=1) en haut de votre fichier. 
+
+=== ...
+
+Cela garantit que seules des valeurs du type exact spécifié seront acceptées.
+
+=== Exemple avec mode strict :
+[source, php]
+----
+declare(strict_types=1);
+
+function multiplier(int $a, int $b): int {
+    return $a * $b;
+}
+
+echo multiplier(3, 4); // Affichera 12
+// echo multiplier(3, "4"); // Provoquera une erreur car "4" est une chaîne
+----
+
+=== Typage avec des classes et interfaces :
+
+Vous pouvez également spécifier des types pour les objets, les interfaces, et les classes abstraites. 
+
+=== ...
+
+Cela garantit que les objets passés aux fonctions ou retournés respectent une certaine structure ou implémentation.
+
+=== Exemple avec des interfaces :
+
+[source, php]
+----
+interface Calculatrice {
+    public function addition(int $a, int $b): int;
+}
+
+class MaCalculatrice implements Calculatrice {
+    public function addition(int $a, int $b): int {
+        return $a + $b;
+    }
+}
+
+function utiliserCalculatrice(Calculatrice $calc) {
+    echo $calc->addition(5, 3);
+}
+
+$maCalc = new MaCalculatrice();
+utiliserCalculatrice($maCalc); // Affichera 8
+----
+
+=== Explication :
+
+
+=== Calculatrice $calc : 
+
+Indique que la fonction attend un objet qui implémente l'interface Calculatrice.
+
+=== ...
+
+Cela permet de s'assurer que les objets passés à la fonction respectent un contrat précis.
+
+
+== Union Types (PHP 8) :
+
+PHP 8 a introduit les types d'union, qui permettent de spécifier plusieurs types possibles pour un argument ou une valeur de retour.
+
+=== Exemple avec types d'union :
+
+[source, php]
+----
+function afficher($valeur): int|string {
+    if (is_int($valeur)) {
+        return $valeur;
+    } elseif (is_string($valeur)) {
+        return $valeur;
+    }
+    throw new InvalidArgumentException("Valeur doit être un entier ou une chaîne.");
+}
+
+echo afficher(123);    // Affichera 123
+echo afficher("Test"); // Affichera Test
+// echo afficher(3.14); // Provoquera une exception
+----
+
+== Explication :
+
+=== int|string : 
+
+Permet à l'argument ou au retour de la fonction d'être soit un entier, soit une chaîne de caractères. 
+
+=== ...
+
+Cela améliore la flexibilité tout en garantissant une certaine robustesse dans la gestion des types.
+
+
+== Avantages de la spécification des types :
+
+=== Détection précoce des erreurs : 
+
+En spécifiant des types, PHP peut détecter les erreurs de type avant même que le code ne soit exécuté.
+
+=== Documentation claire : 
+
+Les types dans les signatures de fonction agissent comme une documentation automatique, aidant les développeurs à comprendre immédiatement quelles valeurs sont attendues ou retournées.
+
+
+=== Amélioration de la maintenabilité : 
+
+Les fonctions et méthodes avec des types spécifiés sont plus prévisibles, ce qui facilite la maintenance du code sur le long terme.
+
+=== Sécurité accrue : 
+
+
+Le typage strict réduit le risque d'erreurs subtiles liées à la conversion implicite des types.
+
+
+
+// end of type hinting ---------------
+
+=== Les nouveautés de PHP 7+ :
+
+=== ...
+
+Type return (déclaration du type de retour d'une fonction).
+
+=== ...
+
+
+En PHP, spécifier le type de retour d'une fonction ou d'une méthode permet d'assurer qu'une fonction retourne toujours une valeur d'un type précis. 
+
+
+=== ...
+
+Cela renforce la robustesse du code, en évitant les retours inattendus ou incorrects, et rend le comportement des fonctions plus explicite et prévisible.
+
+
+== Syntaxe de la déclaration du type de retour
+
+
+Pour déclarer le type de retour d'une fonction, on ajoute un deux-points : après la liste des paramètres, suivi du type de retour attendu. 
+
+
+=== ...
+
+PHP vérifiera alors que la valeur retournée correspond au type spécifié.
+
+=== Exemple simple de type de retour :
+
+[source, php]
+----
+function addition(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo addition(5, 3);  // Affichera 8
+----
+
+
+=== Explication :
+
+=== : int 
+
+indique que la fonction addition() doit retourner un entier (int).
+
+=== ...
+
+Si la fonction retourne un type différent, PHP générera une erreur de type.
+
+== Types de retour supportés
+
+PHP prend en charge plusieurs types de retour, notamment :
+
+=== Types scalaires : 
+
+int, float, string, bool
+
+=== Types composites : 
+
+array, object
+
+=== Types d'objet : 
+
+Noms de classes ou interfaces spécifiques
+
+=== void : 
+
+Utilisé lorsque la fonction ne doit retourner aucune valeur
+
+=== Types nullables : 
+
+Combinaison d'un type avec null (avec ? avant le type)
+
+=== Types d'union (à partir de PHP 8) : 
+
+Combinaison de plusieurs types
+
+== Exemples de types de retour courants
+
+=== Type de retour scalaire :
+
+[source, php]
+----
+function multiplier(float $a, float $b): float {
+    return $a * $b;
+}
+
+echo multiplier(2.5, 4.0);  // Affichera 10.0
+----
+
+=== ...
+
+Dans cet exemple, la fonction multiplier() doit retourner un nombre flottant (float).
+
+=== Type de retour void :
+
+Une fonction avec un type de retour void ne doit rien retourner, pas même null. Si vous essayez de retourner une valeur, PHP générera une erreur.
+
+=== ...
+
+[source, php]
+----
+function afficherMessage(string $message): void {
+    echo $message;
+}
+
+afficherMessage("Bonjour !");  // Affichera "Bonjour !"
+----
+
+=== ...
+
+Ici, la fonction afficherMessage() ne retourne aucune valeur, elle se contente d'afficher un message.
+
+=== Type de retour d'un tableau (array) :
+
+[source, php]
+----
+function getNombres(): array {
+    return [1, 2, 3, 4, 5];
+}
+
+print_r(getNombres());  // Affichera Array ( [0] => 1 [1] => 2 [2] => 3 [3] => 4 [4] => 5 )
+----
+
+=== ...
+
+La fonction getNombres() retourne un tableau, spécifié par le type array.
+
+=== Type de retour d'un objet :
+
+
+Vous pouvez spécifier qu'une fonction retourne un objet d'une certaine classe ou interface.
+
+[source, php]
+----
+class Utilisateur {
+    public $nom;
+
+    public function __construct(string $nom) {
+        $this->nom = $nom;
+    }
+}
+
+function creerUtilisateur(string $nom): Utilisateur {
+    return new Utilisateur($nom);
+}
+
+$user = creerUtilisateur("Alice");
+echo $user->nom;  // Affichera "Alice"
+----
+
+=== ...
+
+La fonction creerUtilisateur() doit retourner un objet de la classe Utilisateur.
+
+
+== Types nullables (?)
+
+Un type nullable permet à une fonction de retourner soit une valeur du type spécifié, soit null. 
+
+=== ...
+
+Cela est utile lorsque le retour de null est une possibilité.
+
+=== Exemple de type nullable :
+
+
+[source, php]
+----
+function chercherUtilisateur(int $id): ?Utilisateur {
+    if ($id === 1) {
+        return new Utilisateur("Alice");
+    }
+    return null;
+}
+
+$utilisateur = chercherUtilisateur(1);
+if ($utilisateur === null) {
+    echo "Utilisateur non trouvé.";
+} else {
+    echo "Utilisateur trouvé : " . $utilisateur->nom;
+}
+----
+
+=== ...
+
+
+?Utilisateur signifie que la fonction peut retourner soit un objet de la classe Utilisateur, soit null.
+
+
+== Types d'union (PHP 8)
+
+Les types d'union permettent de déclarer que le retour d'une fonction peut être de plusieurs types différents. 
+
+=== ...
+
+Cela offre plus de flexibilité tout en maintenant un contrôle sur les types retournés.
+
+=== Exemple avec types d'union :
+
+[source, php]
+----
+function retournerValeur(int|string $valeur): int|string {
+    return $valeur;
+}
+
+echo retournerValeur(10);    // Affichera 10
+echo retournerValeur("Texte"); // Affichera "Texte"
+----
+
+
+Dans cet exemple, la fonction retournerValeur() peut retourner soit un entier (int), soit une chaîne de caractères (string), ce qui est précisé avec int|string.
+
+== Avantages des types de retour
+
+=== Détection précoce des erreurs : 
+
+En spécifiant les types de retour, PHP peut signaler des erreurs de type avant même que le code ne soit exécuté, ce qui réduit les bugs potentiels.
+
+
+=== Amélioration de la lisibilité et de la maintenabilité : 
+
+Le typage explicite du retour d'une fonction permet aux autres développeurs de comprendre immédiatement ce qu'une fonction est censée retourner.
+
+=== Encapsulation des contrats : 
+
+Le type de retour garantit que chaque fonction respecte un contrat défini (par exemple, une fonction de base de données doit toujours retourner un tableau ou un objet spécifique).
+
+
+
+== Erreurs communes liées aux types de retour
+
+=== Retourner un type incompatible :
+
+Si une fonction retourne un type qui ne correspond pas à celui déclaré, PHP générera une erreur fatale.
+
+=== ...
+
+[source, php]
+----
+function division(int $a, int $b): float {
+    if ($b === 0) {
+        return "Division par zéro"; // Cela génèrera une erreur car le retour doit être un float
+    }
+    return $a / $b;
+}
+----
+
+=== Omettre le type nullable : 
+
+Si une fonction est censée retourner null dans certains cas, mais que cela n'est pas explicitement autorisé dans la signature de la fonction, une erreur sera générée.
+
+=== ...
+
+[source, php]
+----
+function chercherNom(int $id): string {
+    if ($id === 0) {
+        return null;  // Erreur, car le type de retour doit être une chaîne (string), pas null
+    }
+    return "Alice";
+}
+----
+
+== Utilisation du typage strict (declare(strict_types=1))
+
+Le typage strict empêche les conversions implicites des types et exige que les valeurs fournies et retournées correspondent exactement aux types déclarés. 
+
+=== ...
+
+Cela renforce encore la robustesse du code.
+
+=== Exemple avec typage strict :
+
+[source, php]
+----
+declare(strict_types=1);
+
+function carre(int $nombre): int {
+    return $nombre * $nombre;
+}
+
+echo carre(4);  // Affichera 16
+// echo carre("4");  // Erreur car "4" est une chaîne et non un entier
+----
+
+
+=== ...
+
+Avec declare(strict_types=1), PHP n'autorise plus les conversions automatiques entre types incompatibles, et une erreur sera levée si un type incorrect est utilisé.
+
+
+// -------------------------------------------------
+
+== Types scalaires stricts (entiers, flottants, etc.).
+
+
+Les types scalaires stricts en PHP se réfèrent à l'utilisation rigoureuse des types de données de base comme les entiers (int), flottants (float), chaînes de caractères (string), et booléens (bool) dans les fonctions et méthodes. 
+
+
+=== ...
+
+L'objectif est de s'assurer que les fonctions reçoivent des données du type exact déclaré et non une version "convertie" de ces types, ce qui améliore la robustesse et la sécurité du code.
+
+=== Typage en mode strict :
+
+
+En PHP, le typage est généralement flexible. 
+
+=== ...
+
+Par exemple, vous pouvez passer une chaîne de caractères représentant un nombre à une fonction qui attend un entier, et PHP convertira automatiquement la chaîne en entier. 
+
+
+=== ...
+
+Cependant, cela peut entraîner des comportements inattendus ou des erreurs difficiles à déboguer. 
+
+
+=== ...
+
+Le typage strict est une solution qui force PHP à respecter exactement les types déclarés, en empêchant les conversions implicites entre types.
+
+== Activation du typage strict :
+
+Le mode strict est activé avec la déclaration declare(strict_types=1) au début d'un fichier PHP. 
+
+=== ...
+
+Cela oblige PHP à respecter les types spécifiés dans les signatures de fonctions pour les arguments et les valeurs de retour.
+
+[source, php]
+----
+declare(strict_types=1);
+----
+
+
+== Types scalaires en PHP :
+
+Les types scalaires sont les types de données de base que vous pouvez utiliser dans les signatures de fonctions, à savoir :
+
+=== int : 
+
+Représente un entier (par exemple, 5, 100, -20).
+
+=== float : 
+
+Représente un nombre à virgule flottante (par exemple, 3.14, -0.5).
+
+=== string : 
+
+Représente une chaîne de caractères (par exemple, "Bonjour", "123").
+
+=== bool : 
+
+Représente une valeur booléenne, soit true, soit false.
+
+== Exemple de typage strict avec des types scalaires :
+[source, php]
+----
+declare(strict_types=1);
+
+function additionner(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo additionner(5, 10);  // Affichera 15
+// echo additionner(5, "10");  // Provoquera une erreur fatale car "10" est une chaîne
+----
+
+=== Explication :
+
+=== declare(strict_types=1) : 
+
+Active le typage strict pour tout le fichier PHP.
+
+La fonction additionner() attend deux paramètres de type int. 
+
+=== ...
+
+En mode strict, si un type incorrect (comme une chaîne) est passé, PHP lèvera une erreur fatale.
+
+
+== Typage strict vs typage flexible :
+
+En mode non strict (le mode par défaut), PHP autorise les conversions implicites entre types. 
+
+=== ...
+
+Cela signifie que PHP convertira automatiquement une chaîne contenant un nombre en entier, ou une chaîne vide en false, et ainsi de suite.
+
+=== Exemple sans typage strict (par défaut) :
+
+[source, php]
+----
+function multiplier(int $a, int $b): int {
+    return $a * $b;
+}
+
+echo multiplier(3, "4");  // Affichera 12, la chaîne "4" est convertie en entier
+----
+
+
+En mode strict, cela provoquerait une erreur :
+
+=== ...
+
+[source, php]
+----
+declare(strict_types=1);
+
+function multiplier(int $a, int $b): int {
+    return $a * $b;
+}
+
+echo multiplier(3, "4");  // Provoquera une erreur car "4" est une chaîne, pas un entier
+----
+
+
+
+== Types scalaires stricts avec valeurs de retour :
+
+
+Le typage strict s'applique également aux valeurs de retour des fonctions. 
+
+=== ...
+
+Si la fonction doit retourner un type spécifique, toute tentative de retour d'un type différent entraînera une erreur.
+
+=== Exemple avec type de retour strict :
+
+[source, php]
+----
+declare(strict_types=1);
+
+function diviser(float $a, float $b): float {
+    if ($b === 0.0) {
+        throw new Exception("Division par zéro.");
+    }
+    return $a / $b;
+}
+
+echo diviser(10.0, 2.0);  // Affichera 5.0
+// echo diviser(10, 0);  // Provoquera une erreur si l'un des arguments n'est pas un flottant
+----
+
+
+== Gestion des types scalaires stricts dans les classes :
+
+
+Le typage strict fonctionne également dans les méthodes de classe. Vous pouvez définir des types pour les arguments des méthodes ainsi que pour leurs valeurs de retour.
+
+=== Exemple avec une classe :
+
+[source, php]
+----
+declare(strict_types=1);
+
+class Calculatrice {
+    public function ajouter(int $a, int $b): int {
+        return $a + $b;
+    }
+
+    public function diviser(float $a, float $b): float {
+        if ($b === 0.0) {
+            throw new Exception("Division par zéro.");
+        }
+        return $a / $b;
+    }
+}
+
+$calc = new Calculatrice();
+echo $calc->ajouter(5, 10);  // Affichera 15
+echo $calc->diviser(10.0, 2.0);  // Affichera 5.0
+----
+
+
+== Avantages du typage strict des types scalaires :
+
+=== Détection précoce des erreurs : 
+
+Le typage strict permet d'attraper des erreurs de type avant que le programme ne soit exécuté. 
+
+=== ...
+
+Cela améliore la robustesse du code en réduisant les bugs liés à des types inattendus.
+
+=== Amélioration de la lisibilité et de la maintenabilité : 
+
+Le typage strict permet de rendre les fonctions plus prévisibles. 
+
+Les développeurs qui lisent le code savent exactement quels types d'arguments une fonction attend et quel type elle retourne.
+
+=== Sécurité renforcée : 
+
+Le typage strict empêche les conversions implicites entre types, ce qui réduit le risque de comportements inattendus ou de failles de sécurité potentielles dans le traitement des données.
+
+=== Optimisation des performances : 
+
+En spécifiant les types, PHP n'a pas besoin de réaliser des conversions automatiques, ce qui peut améliorer les performances dans certains cas.
+
+== Limites du typage strict :
+
+=== Incompatibilité avec du code flexible : 
+
+Le typage strict peut rendre certaines fonctions moins flexibles, notamment lorsqu'elles doivent manipuler plusieurs types de données. 
+
+=== ...
+
+Cependant, PHP 8 a introduit les types d'union pour gérer cela (par exemple, int|string).
+
+=== Erreur potentielle en cas de valeur inattendue : 
+
+Si vous oubliez de traiter certains cas (comme null), PHP générera une erreur si une valeur du mauvais type est retournée ou passée en argument.
+
+== Cas d'utilisation du typage strict :
+
+=== Opérations mathématiques : 
+
+Lorsque vous travaillez avec des nombres, le typage strict garantit que les calculs sont effectués avec les bons types (int ou float).
+
+=== Fonctions de validation : 
+
+Les fonctions qui valident des entrées utilisateur peuvent bénéficier du typage strict pour s'assurer que les valeurs sont du bon type avant de les traiter.
+
+
+=== Gestion de l'API : 
+
+Si vous développez une API ou une bibliothèque utilisée par d'autres développeurs, le typage strict peut garantir que votre interface reste cohérente et prévisible.
+
+
+==  Exemple avancé avec différentes combinaisons de types scalaires stricts :
+
+[source, php]
+----
+declare(strict_types=1);
+
+class Formulaire {
+    public function validerChaine(string $texte): bool {
+        return !empty($texte);
+    }
+
+    public function calculerTotal(float $prixUnitaire, int $quantite): float {
+        return $prixUnitaire * $quantite;
+    }
+
+    public function envoyerReponse(bool $success): string {
+        return $success ? "Validation réussie" : "Validation échouée";
+    }
+}
+
+$form = new Formulaire();
+echo $form->validerChaine("Test");  // Affichera 1 (true)
+echo $form->calculerTotal(19.99, 3);  // Affichera 59.97
+echo $form->envoyerReponse(true);  // Affichera "Validation réussie"
+----
+
+== Explication :
+
+validerChaine() attend une chaîne de caractères (string) et retourne un booléen (bool).
+
+=== ...
+
+calculerTotal() prend un flottant et un entier, et retourne un flottant (float).
+
+
+=== ...
+
+envoyerReponse() prend un booléen et retourne une chaîne (string).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------------------------------------------------------------------
+
+

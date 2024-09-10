@@ -1,3 +1,2 @@
 node_modules
-*.adoc
-!j1.adoc
+app/vendor/

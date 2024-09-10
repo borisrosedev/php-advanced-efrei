@@ -1,0 +1,14 @@
+@mixin flex-box($just: flex-start, $align: flex-start, $dir: row){
+    display: flex;
+    justify-content: $just;
+    align-items: $align;
+    flex-direction: $dir;
+}
+
+@mixin circular-figure($face: 40px) {
+    width: $face;
+    height: $face;
+    border-radius: 50%;
+    overflow: hidden;
+ 
+}

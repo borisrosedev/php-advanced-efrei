@@ -1,0 +1,14 @@
+@use "./vendor/bulma";
+@use "./base/tipography";
+@use "./abstracts/variables";
+@use "./abstracts/mixins";
+@use "./abstracts/keyframes";
+@use "./base/base";
+
+// layout
+@use "./layout/app-header";
+@use "./layout/app-main";
+@use "./layout/app-footer";
+
+//pages
+@use "./pages/home";

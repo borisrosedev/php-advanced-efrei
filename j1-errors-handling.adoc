@@ -1,0 +1,629 @@
+= J1 : Gestion des erreurs et des exceptions
+
+== Gestion avancée des erreurs et des exceptions 
+
+== Gestion des erreurs classiques avec try, catch, et finally : 
+
+Comment bien capturer et traiter les erreurs.
+
+//-------------------------------------------------------------------------------
+
+=== ...
+
+Capturer et traiter les erreurs est une pratique essentielle dans le développement logiciel pour garantir:
+[%step]
+* la fiabilité, 
+* la sécurité
+* la maintenabilité d'une application. 
+
+=== ...
+
+En PHP, les erreurs peuvent survenir pour plusieurs raisons : 
+[%step]
+* mauvaise entrée utilisateur, 
+* problèmes liés à la base de données, 
+* erreurs réseau, 
+* exceptions liées à des fichiers. 
+
+
+=== ...
+
+PHP offre plusieurs mécanismes pour capturer et traiter les erreurs de manière appropriée, notamment avec les exceptions et le système de gestion des erreurs.
+
+
+
+== Types d'erreurs en PHP :
+
+Avant d'examiner la manière de capturer et traiter les erreurs, il est important de comprendre les principaux types d'erreurs en PHP :
+
+=== Erreurs fatales : 
+
+Ces erreurs arrêtent immédiatement l'exécution du script. Exemple : appel à une fonction inexistante.
+
+=== Avertissements (warnings) :
+
+Des erreurs qui n'arrêtent pas l'exécution du script, mais qui signalent un problème. 
+
+=== Exemple : 
+
+inclusion d'un fichier inexistant avec include().
+
+=== Notices : 
+
+Ce sont des erreurs mineures souvent liées à des variables non définies.
+
+=== Exceptions : 
+
+Utilisées pour capturer et gérer les erreurs de manière plus structurée.
+
+== Gestion des erreurs avec try, catch et finally (Exceptions) :
+
+
+Le mécanisme try-catch permet de capturer des erreurs sous forme d'exceptions et de les traiter de manière contrôlée. 
+
+=== ...
+
+Les exceptions peuvent être levées (générées) à tout moment dans le code avec throw, et capturées à l’aide de catch.
+
+Exemple de gestion d'exception avec try-catch :
+[source, php]
+----
+function division($num, $denom) {
+    if ($denom == 0) {
+        throw new Exception("Division par zéro interdite.");
+    }
+    return $num / $denom;
+}
+
+try {
+    echo division(10, 2); // Cela fonctionnera
+    echo division(10, 0); // Cela va générer une exception
+} catch (Exception $e) {
+    echo "Erreur : " . $e->getMessage(); // Capture et affichage de l'erreur
+}
+----
+
+
+=== Explication :
+
+=== throw new Exception : 
+
+Lève une exception lorsque le dénominateur est 0.
+
+=== try : 
+
+Bloc de code qui peut potentiellement lancer une exception.
+
+=== catch : 
+
+Capture l'exception et permet de la traiter sans arrêter l'exécution du script.
+
+
+=== $e->getMessage() :
+
+Récupère le message associé à l'exception levée.
+
+=== Bloc finally :
+
+Le bloc finally peut être utilisé pour exécuter du code indépendamment du fait qu'une exception ait été levée ou non. 
+
+=== ...
+
+Cela est utile pour nettoyer les ressources (comme fermer une connexion à une base de données ou un fichier).
+
+=== ...
+
+[source, php]
+----
+try {
+    // Code qui peut lever une exception
+    echo division(10, 0);
+} catch (Exception $e) {
+    echo "Erreur capturée : " . $e->getMessage();
+} finally {
+    echo "Opération terminée."; // Ce code est exécuté quoi qu'il arrive
+}
+----
+
+== Personnalisation des exceptions :
+
+PHP permet de créer des exceptions personnalisées pour gérer des cas d'erreurs spécifiques à votre application. 
+
+=== ...
+
+Cela permet de structurer le traitement des erreurs de manière plus propre et modulaire.
+
+=== Exemple d'exception personnalisée :
+[source, php]
+----
+class MonException extends Exception {
+    public function messagePersonnalise() {
+        return "Erreur personnalisée : " . $this->getMessage();
+    }
+}
+
+function testDivision($num, $denom) {
+    if ($denom == 0) {
+        throw new MonException("Division par zéro détectée !");
+    }
+    return $num / $denom;
+}
+
+try {
+    echo testDivision(10, 0);
+} catch (MonException $e) {
+    echo $e->messagePersonnalise(); // Affiche le message personnalisé
+}
+----
+
+=== Explication :
+
+MonException est une classe qui étend la classe Exception, vous permettant de personnaliser le comportement des exceptions.
+
+=== ...
+
+messagePersonnalise() est une méthode ajoutée à la classe MonException pour afficher un message d'erreur spécifique.
+
+
+== Types d'exceptions en PHP :
+
+En plus de la classe Exception standard, PHP propose plusieurs sous-classes pour gérer des types d'erreurs spécifiques. 
+
+=== ...
+
+Voici quelques exemples :
+
+=== PDOException : 
+
+Gère les erreurs liées à la base de données lors de l'utilisation de PDO.
+
+=== ErrorException :
+
+Permet de transformer des erreurs PHP standards en exceptions.
+
+=== InvalidArgumentException, OutOfRangeException, etc. : 
+
+Utilisées pour des cas spécifiques liés aux arguments ou aux opérations en dehors de la plage prévue.
+
+=== Exemple avec PDOException (gestion des erreurs de base de données) :
+
+[source, php]
+----
+try {
+    $dbh = new PDO('mysql:host=localhost;dbname=test', 'root', 'motdepasse');
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Active les exceptions PDO
+    $dbh->query("SELECT * FROM table_inexistante"); // Cela va lever une exception
+} catch (PDOException $e) {
+    echo "Erreur PDO : " . $e->getMessage();
+}
+----
+
+== Transformation des erreurs PHP en exceptions :
+
+Vous pouvez convertir les erreurs PHP traditionnelles en exceptions avec ErrorException. 
+
+=== ...
+
+Cela est utile pour unifier la gestion des erreurs et éviter d'utiliser des structures différentes pour chaque type d'erreur.
+
+=== Exemple de conversion d'erreurs en exceptions :
+
+[source, php]
+----
+function gestionErreurs($niveau, $message, $fichier, $ligne) {
+    throw new ErrorException($message, 0, $niveau, $fichier, $ligne);
+}
+
+set_error_handler("gestionErreurs");
+
+try {
+    // Ce code va générer un avertissement (division par zéro)
+    $result = 10 / 0;
+} catch (ErrorException $e) {
+    echo "Erreur capturée : " . $e->getMessage();
+}
+----
+
+=== Explication :
+
+set_error_handler() définit une fonction personnalisée pour gérer les erreurs PHP traditionnelles (comme les avertissements ou notices).
+
+=== ...
+
+ErrorException permet de convertir une erreur en exception, permettant ainsi d'utiliser un bloc try-catch pour gérer des erreurs PHP.
+
+
+== Bonnes pratiques pour la gestion des erreurs :
+
+
+=== Toujours capturer les erreurs critiques : 
+
+
+Utilisez des blocs try-catch pour capturer les erreurs qui pourraient entraîner l'arrêt de votre application, comme:
+[%step]
+* les erreurs de connexion à la base de données
+* les erreurs de lecture de fichiers.
+
+=== Ne pas abuser des exceptions : 
+
+
+Les exceptions doivent être utilisées pour capturer des situations **exceptionnelles**, et non pour gérer des flux de contrôle normaux dans votre programme. 
+
+=== ...
+
+Utilisez-les pour les erreurs graves ou inattendues.
+
+=== Protéger le code critique avec finally : 
+
+
+Utilisez le bloc finally pour assurer que certaines actions (fermeture de fichiers, libération de ressources) soient toujours effectuées, même si une exception a été levée.
+
+=== Ne pas masquer les erreurs : 
+
+Lorsque vous attrapez une exception, assurez-vous de bien journaliser ou afficher des informations utiles, au lieu de masquer l'erreur sans explication. 
+
+=== ...
+
+Cela facilite le débogage.
+
+=== Utiliser des exceptions personnalisées : 
+
+Créez vos propres exceptions pour les cas spécifiques à votre application. 
+
+=== ...
+
+Cela permet une gestion plus fine des erreurs et améliore la lisibilité de votre code.
+
+=== Gestion des erreurs utilisateur : 
+
+
+N'affichez jamais des messages d'erreur techniques à vos utilisateurs finaux (comme les détails de la base de données ou des fichiers). 
+
+=== ...
+
+En cas d'erreur, fournissez **un message générique** et journalisez les détails techniques pour l'administrateur du système.
+
+
+== Utilisation de error_log() pour journaliser les erreurs :
+
+En plus de capturer et d'afficher les erreurs, il est recommandé de journaliser les erreurs dans un fichier ou un système de gestion des journaux. 
+
+=== ...
+
+Vous pouvez utiliser la fonction error_log() pour cela.
+
+[source, php]
+----
+try {
+    echo division(10, 0);
+} catch (Exception $e) {
+    error_log($e->getMessage()); // Enregistre l'erreur dans le journal des erreurs
+    echo "Une erreur est survenue, veuillez réessayer plus tard.";
+}
+----
+
+
+//---------------------------------------------------------------------------------
+
+=== Exemple pratique : 
+
+Capturer une exception DivisionByZeroError dans une fonction de calcul.
+
+== Création de classes d'exception personnalisées :
+
+=== Exemple pratique : 
+
+Créer une classe MonException qui étend Exception et l'utiliser dans un scénario spécifique.
+
+=== Meilleures pratiques : 
+
+Où et quand lever des exceptions, comment structurer la gestion des erreurs pour une meilleure maintenabilité du code.
+
+
+//----------------------------------------------------------------------------
+
+Lever des exceptions est une pratique essentielle pour gérer les erreurs de manière contrôlée et prévisible dans un programme. 
+
+=== ...
+
+Cependant, il est crucial de savoir où et quand lever des exceptions pour ne pas surcharger le code, tout en garantissant que les erreurs sont correctement signalées et gérées. 
+
+=== ...
+
+Structurer la gestion des erreurs de manière cohérente permet d'améliorer la maintenabilité du code, en facilitant le débogage et en assurant une gestion des erreurs propre.
+
+== Quand lever des exceptions ?
+
+=== Conditions d'erreur inattendues ou critiques :
+
+Les exceptions doivent être levées lorsque le programme se retrouve dans une situation qu'il ne peut pas gérer normalement, et où continuer l'exécution entraînerait un comportement incorrect ou dangereux.
+
+=== Exemple : 
+
+Si une division par zéro est détectée, ou si un fichier nécessaire à l'exécution du programme est introuvable, il est judicieux de lever une exception.
+
+
+[source, php]
+----
+function division($numerateur, $denominateur) {
+    if ($denominateur == 0) {
+        throw new Exception("Division par zéro détectée.");
+    }
+    return $numerateur / $denominateur;
+}
+----
+
+
+=== Validation des entrées utilisateur :
+
+Lever des exceptions lorsque des entrées utilisateur sont invalides est une bonne pratique pour garantir l'intégrité des données.
+
+=== Exemple : 
+
+Si un utilisateur tente de saisir une date dans un format incorrect, ou soumet une valeur numérique dans un champ texte où une chaîne est attendue.
+
+=== ...
+
+[source, php]
+----
+function validerAge($age) {
+    if (!is_numeric($age) || $age < 0 || $age > 120) {
+        throw new InvalidArgumentException("L'âge doit être un nombre entre 0 et 120.");
+    }
+    return true;
+}
+----
+
+
+=== Problèmes liés aux ressources externes (fichiers, bases de données, API) :
+
+
+Lorsqu'une ressource externe échoue, telle qu'une connexion à une base de données ou une requête API qui ne retourne pas de réponse valide, une exception doit être levée.
+
+
+=== Exemple : 
+
+Si un fichier requis ne peut pas être ouvert, ou si une requête HTTP échoue, le programme doit lever une exception pour signaler que quelque chose ne va pas.
+
+=== ...
+[source, php]
+----
+function ouvrirFichier($nomFichier) {
+    if (!file_exists($nomFichier)) {
+        throw new Exception("Fichier non trouvé : " . $nomFichier);
+    }
+    return fopen($nomFichier, "r");
+}
+----
+
+
+=== État incorrect de l'application (logique métier) :
+
+Lorsqu'un processus se trouve dans un état non valide (par exemple, une commande sans produits ou un utilisateur sans permissions), il est pertinent de lever une exception.
+
+
+=== Exemple : 
+
+Si une commande est créée sans produits, le programme doit lever une exception pour garantir que la logique métier est respectée.
+
+
+[source, php]
+----
+class Commande {
+    private $produits = [];
+
+    public function ajouterProduit($produit) {
+        $this->produits[] = $produit;
+    }
+
+    public function finaliser() {
+        if (empty($this->produits)) {
+            throw new LogicException("Une commande ne peut pas être finalisée sans produits.");
+        }
+        echo "Commande finalisée avec succès.";
+    }
+}
+----
+
+
+=== Échec d'une opération irréversible :
+
+Dans certains cas, comme la suppression de données critiques ou une transaction financière, lever une exception est nécessaire si l'opération échoue afin d'annuler ou de signaler l'échec.
+
+[source, php]
+----
+function supprimerUtilisateur($userId) {
+    // Simuler un échec de suppression
+    if (!deleteFromDatabase($userId)) {
+        throw new RuntimeException("Impossible de supprimer l'utilisateur avec l'ID $userId.");
+    }
+}
+----
+
+
+== Où lever des exceptions ?
+
+===  Points d'entrée critiques (fonctions et méthodes) :
+
+Les exceptions doivent être levées dans les fonctions et méthodes responsables des actions importantes telles que :
+
+=== ...
+
+Interaction avec les bases de données (connexion, requêtes, transactions).
+
+=== ...
+
+Lecture et écriture de fichiers.
+
+=== ...
+
+Appels d'API externes.
+
+=== ...
+
+Validation des données d'entrée ou des paramètres.
+
+=== ...
+
+Ces points d'entrée sont souvent les endroits où des erreurs peuvent survenir de manière inattendue, et où il est nécessaire de signaler des erreurs de manière explicite.
+
+
+=== Couche d'accès aux données (DAO ou ORM) :
+
+Dans les systèmes qui utilisent des bases de données, lever des exceptions dans les opérations de lecture, d'écriture et de suppression est essentiel. 
+
+
+=== ...
+
+Cela permet de capturer les erreurs de base de données (comme les échecs de connexion ou les violations de contraintes) et de les traiter correctement.
+
+[source, php]
+----
+class UtilisateurDAO {
+    public function obtenirUtilisateurParId($id) {
+        $query = "SELECT * FROM utilisateurs WHERE id = :id";
+        $stmt = $this->connexion->prepare($query);
+
+        if (!$stmt->execute([':id' => $id])) {
+            throw new PDOException("Échec de la récupération de l'utilisateur avec ID $id.");
+        }
+
+        return $stmt->fetch();
+    }
+}
+----
+
+
+=== Couche de service (logique métier) :
+
+Les exceptions doivent également être levées dans la logique métier (services, contrôleurs) lorsque des conditions d'affaires spécifiques ne sont pas respectées. Cela permet de garantir que les règles métier sont appliquées correctement.
+
+[source, php]
+----
+class ServiceCommande {
+    public function traiterCommande($commande) {
+        if (!$commande->estValide()) {
+            throw new LogicException("La commande n'est pas valide.");
+        }
+        // Continuer avec le traitement
+    }
+}
+----
+
+
+== Structurer la gestion des erreurs pour une meilleure maintenabilité :
+
+=== Centraliser la gestion des erreurs :
+
+Il est recommandé de centraliser la gestion des erreurs dans des couches spécifiques, telles qu'un middleware (dans le cas des frameworks MVC) ou un gestionnaire d'erreurs global.
+
+=== ...
+
+
+Cela permet de séparer la logique métier des mécanismes de gestion des erreurs et d'éviter la duplication de code dans chaque partie de l'application.
+
+
+
+[source, php]
+----
+function gestionErreursGlobales(Exception $e) {
+    error_log($e->getMessage());
+    echo "Une erreur est survenue, veuillez contacter l'administrateur.";
+}
+
+set_exception_handler('gestionErreursGlobales')
+----
+
+
+== Utiliser des exceptions spécifiques :
+
+Créez des exceptions personnalisées pour des types d'erreurs spécifiques à votre domaine d'application. 
+
+=== ...
+
+Cela permet d'organiser plus clairement la gestion des erreurs.
+
+
+=== ...
+
+Par exemple, vous pouvez avoir une ExceptionConnexion, une ExceptionValidation, ou encore une ExceptionCommandeInvalide, chacune avec son propre message d'erreur et contexte.
+
+
+[source, php]
+----
+class ExceptionCommandeInvalide extends Exception {}
+
+class CommandeService {
+    public function validerCommande($commande) {
+        if (!$commande->estValide()) {
+            throw new ExceptionCommandeInvalide("Commande non valide : vérifiez les informations fournies.");
+        }
+    }
+}
+----
+
+
+=== Protéger les points critiques avec try-catch :
+
+Utilisez les blocs try-catch dans les points où des erreurs sont susceptibles de se produire et qui doivent être gérés proprement.
+
+
+=== ...
+
+Protégez les interactions avec les bases de données, les fichiers, ou les appels réseau dans des blocs try-catch pour capturer les erreurs et éviter que l'application ne s'arrête brutalement.
+
+=== ...
+
+
+[source, php]
+----
+try {
+    $commandeService->validerCommande($commande);
+} catch (ExceptionCommandeInvalide $e) {
+    echo "Erreur : " . $e->getMessage();
+    // Journaliser l'erreur ou notifier l'administrateur
+}
+----
+
+== Utiliser les exceptions pour contrôler le flux du programme :
+
+N'utilisez pas les exceptions pour gérer le flux normal d'une application. Elles doivent être réservées aux situations exceptionnelles.
+
+
+=== ...
+
+
+Si une situation peut être gérée sans lever d'exception (par exemple, renvoyer false ou null pour des vérifications logiques simples), cela peut souvent être préférable pour éviter de rendre le code inutilement complexe.
+
+
+[source, php]
+----
+// Mauvaise utilisation des exceptions pour gérer des vérifications normales
+try {
+    if (!validerEmail($email)) {
+        throw new Exception("Email invalide.");
+    }
+} catch (Exception $e) {
+    // Ne pas utiliser d'exception pour des validations simples
+    echo $e->getMessage();
+}
+----
+
+
+== Journalisation des erreurs :
+
+Utilisez error_log() ou un système de journalisation comme Monolog pour enregistrer les erreurs dans un fichier ou une base de données. 
+
+=== ...
+Cela permet aux administrateurs et développeurs de suivre les erreurs sans afficher de détails sensibles aux utilisateurs.
+
+[source, php]
+----
+try {
+    // Code à risque
+} catch (Exception $e) {
+    error_log($e->getMessage()); // Journaliser l'erreur
+    echo "Une erreur est survenue."; // Message générique pour l'utilisateur
+}
+----
+

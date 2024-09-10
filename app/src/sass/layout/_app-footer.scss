@@ -1,0 +1,12 @@
+.app-footer {
+    display: flex;
+    flex-direction: row;
+    height: 8vh;
+    background-color: rgba($color: #000000, $alpha: 0.5);
+    color: #ffffff;
+    padding: 10px;
+    flex-direction: row-reverse;
+    a {
+        color: #ffffff;   
+    }
+}
