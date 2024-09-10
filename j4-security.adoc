@@ -1,4 +1,7 @@
-= J3 : Sécurité en PHP (3 heures)
+= J4 : Sécurité en PHP
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
 == Gestion des entrées utilisateurs, échapper et valider les données
 

@@ -1,6 +1,9 @@
-== J2
+= J2 Type Hinting
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
-=== Objectifs de la session 
+== Objectifs de la session 
 
 * Comprendre l'intérêt du Typage en PHP afin notamment d'éviter erreurs et failles de sécurité
 * Apprendre des Designs Patterns afin de mieux concevoir son logiciel

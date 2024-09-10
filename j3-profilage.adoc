@@ -1,6 +1,9 @@
-== J3 : Optimisation des performances 
+= J3 : Optimisation des performances 
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
-=== Profilage et benchmarking du code PHP
+== Profilage et benchmarking du code PHP
 
 
 Le profilage et le benchmarking sont des techniques essentielles pour mesurer la performance d'une application PHP. 

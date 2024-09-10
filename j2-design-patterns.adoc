@@ -1,4 +1,7 @@
-== Design Patterns en PHP
+= Design Patterns en PHP
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
 == Singleton : 
 
@@ -712,7 +715,7 @@ La logique de création d'objets est centralisée, facilitant la gestion des obj
 
 Le code qui utilise les objets créés n'a pas besoin de connaître la classe exacte de ces objets.
 
-= Inconvénients :
+== Inconvénients :
 
 === Complexité accrue : 
 

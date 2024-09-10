@@ -1,4 +1,7 @@
 = J1 : Gestion des erreurs et des exceptions
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
 == Gestion avancée des erreurs et des exceptions 
 
