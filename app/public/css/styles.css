@@ -77,6 +77,9 @@ ul, li, p, h1, h2, h3, figure {
 .app-header nav ul li {
   margin-inline: 10px;
 }
+.app-header nav ul li a {
+  color: #fff;
+}
 
 .app-main {
   display: flex;

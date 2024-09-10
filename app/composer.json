@@ -2,7 +2,7 @@
     "name": "borisrose/app",
     "autoload": {
         "psr-4": {
-            "Borisrose\\App\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [

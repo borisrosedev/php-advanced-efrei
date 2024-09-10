@@ -1,7 +1,9 @@
 <?php
-
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+require dirname(__DIR__, 2). "/vendor/autoload.php";
+
+
 
 trait FileLoggingTrait {
     public function fileLogMessage($filename, $message, $type = "DEBUG") {

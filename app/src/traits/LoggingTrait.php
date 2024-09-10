@@ -2,7 +2,7 @@
 
 
 trait LoggingTrait {
-    public function logMessage($message) {
+    public function logMessage(string $message): void {
         echo "Log: $message";
     }
 }

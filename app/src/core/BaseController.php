@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
-require_once dirname(__DIR__, 1).'/config/config.php';
-require_once dirname(__DIR__, 1).'/traits/FileLoggingTrait.php';
-require_once dirname(__DIR__,1).'/database/Database.php';
+
+require dirname(__DIR__, 2) ."/vendor/autoload.php";
+
+require dirname(__DIR__,1) ."/traits/FileLoggingTrait.php";
 
 class BaseController
 {
