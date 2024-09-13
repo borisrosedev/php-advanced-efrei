@@ -1,0 +1,242 @@
+= Match Attributes et Union Types
+
+
+== Types Union (Union Types)
+
+
+=== Qu'est-ce qu'un Type Union ?
+
+Les types union permettent à une variable, un argument ou une valeur de retour d'accepter plusieurs types de données. 
+
+=== ...
+
+Ils sont utiles pour exprimer que la valeur d'une variable peut appartenir à plusieurs types. 
+
+=== ...
+
+Par exemple, une fonction peut accepter à la fois un entier ou une chaîne de caractères.
+
+== Les types union ont été introduits avec PHP 8.
+
+
+=== Syntaxe des Types Union
+
+Un type union est spécifié en séparant les types possibles par le symbole |.
+
+=== Exemple : 
+
+
+Utilisation des Types Union dans une fonction
+
+
+[source, php]
+----
+function displayValue(int|string $valeur): void {
+    if (is_int($valeur)) {
+        echo "C'est un entier : " . $valeur;
+    } elseif (is_string($valeur)) {
+        echo "C'est une chaîne : " . $valeur;
+    }
+}
+
+displayValue(123);         // "C'est un entier : 123"
+displayValue("Hello");     // "C'est une chaîne : Hello"
+----
+
+
+=== Points importants :
+
+L'exemple montre qu'une seule fonction peut accepter plusieurs types (int ou string ici).
+
+=== ...
+
+Vous pouvez également utiliser les types union dans les valeurs de retour.
+
+=== Exemple : Types Union dans une valeur de retour
+
+
+[source, php]
+----
+function addOrConcat(int|string $a, int|string $b): int|string {
+    if (is_int($a) && is_int($b)) {
+        return $a + $b;
+    } else {
+        return $a . $b;
+    }
+}
+
+echo addOrConcat(2, 3);          // Affiche : 5
+echo addOrConcat('Hello', 'World'); // Affiche : HelloWorld
+----
+
+
+=== Restrictions
+
+Les types union ne peuvent pas inclure de types conflictuels, comme des interfaces contradictoires. 
+
+=== ...
+
+Par exemple, vous ne pouvez pas avoir un type union qui combine des types non compatibles comme void|int.
+
+
+== Les expressions match
+
+=== Qu'est-ce que match ?
+
+L'expression match est une alternative plus puissante et concise à l'instruction switch. 
+
+=== ...
+
+Elle a été introduite dans PHP 8 et permet de comparer une valeur contre plusieurs possibilités, tout en retournant directement le résultat. 
+
+=== ...
+
+match est plus strict que switch car il ne permet que des comparaisons d'égalité stricte (===), et il retourne toujours une valeur.
+
+
+=== Syntaxe de l'expression match
+
+=== Exemple : Utilisation de match pour remplacer switch
+
+[source, php]
+----
+$etat = 'on';
+
+$message = match ($etat) {
+    'on' => 'Le système est allumé',
+    'off' => 'Le système est éteint',
+    'pause' => 'Le système est en pause',
+    default => 'État inconnu',
+};
+
+echo $message;  // Affiche : "Le système est allumé"
+----
+
+=== Points importants :
+
+
+match retourne une valeur directement. 
+
+=== ...
+
+Vous pouvez l'assigner à une variable ou l'utiliser dans une expression.
+
+=== ...
+
+Les comparaisons se font avec l'opérateur ===, ce qui signifie que les types doivent correspondre exactement.
+
+=== ...
+
+Si aucune correspondance n'est trouvée et que le cas default n'est pas spécifié, une erreur sera levée.
+
+
+=== match avec des expressions complexes
+
+match peut également être utilisé avec des expressions complexes ou des appels de fonction.
+
+=== Exemple : Utilisation de match avec des expressions
+
+[source, php]
+----
+$score = 85;
+
+$mention = match (true) {
+    $score >= 90 => 'Excellent',
+    $score >= 75 => 'Très bien',
+    $score >= 50 => 'Passable',
+    default => 'Échec',
+};
+
+echo $mention;  // Affiche : "Très bien"
+----
+
+
+== Attributs (Attributes)
+=== Qu'est-ce qu'un Attribut ?
+
+Les attributs (introduits dans PHP 8) sont une manière d'ajouter des métadonnées aux classes, méthodes, propriétés, et fonctions. 
+
+=== ...
+
+Ces métadonnées peuvent être utilisées pour la réflexion ou pour modifier le comportement des éléments annotés. Les attributs remplacent l'usage des annotations en commentaire dans PHP.
+
+=== Syntaxe des Attributs
+
+Les attributs sont définis avec le mot-clé #[...].
+
+=== Exemple : 
+
+
+Déclaration d'un attribut sur une classe
+
+
+[source, php]
+----
+#[Auteur('John Doe', version: '1.0')]
+class MaClasse {
+    #[Deprecated]
+    public function methodeObsolete() {
+        echo "Cette méthode est obsolète";
+    }
+}
+
+class Auteur {
+    public function __construct(public string $nom, public string $version) {}
+}
+----
+
+=== Points importants :
+
+L'attribut #[...] est utilisé avant les classes, méthodes, propriétés ou fonctions.
+
+=== ...
+
+Un attribut peut avoir des paramètres optionnels ou obligatoires (comme nom et version dans l'exemple).
+
+=== ...
+
+Les classes d'attributs doivent être définies comme des classes PHP normales.
+
+
+=== Utilisation des Attributs avec la Réflexion
+
+
+Pour utiliser les attributs, vous devez utiliser la réflexion en PHP, ce qui permet de lire les métadonnées associées aux classes ou aux fonctions.
+
+=== Exemple : Récupérer les Attributs avec la Réflexion
+[source, php]
+----
+
+$reflect = new ReflectionClass(MaClasse::class);
+
+// Récupérer les attributs de la classe
+$attributes = $reflect->getAttributes(Auteur::class);
+
+foreach ($attributes as $attribute) {
+    $instance = $attribute->newInstance();
+    echo "Auteur : " . $instance->nom . ", Version : " . $instance->version . PHP_EOL;
+}
+
+// Affiche : Auteur : John Doe, Version : 1.0
+----
+
+=== Points importants :
+
+getAttributes() permet de récupérer les attributs associés à une classe, méthode ou propriété.
+
+
+newInstance() instancie l'attribut pour accéder à ses valeurs.
+
+
+=== Attributs multiples
+Vous pouvez ajouter plusieurs attributs à une même classe ou fonction.
+
+=== Exemple : Attributs multiples
+[source, php]
+----
+#[Route('/users'), Méthode('GET')]
+class UserController {
+    // ...
+}
+----
+

@@ -1,0 +1,326 @@
+= Tests Unitaires
+
+
+== Introduction
+
+Les tests unitaires sont essentiels dans le développement logiciel moderne pour s'assurer que chaque unité de code (par exemple, une fonction ou une méthode) fonctionne comme prévu. 
+
+=== ...
+
+PHPUnit est l'outil de test unitaire le plus populaire pour PHP. 
+
+=== ...
+
+Il permet d'écrire et d'exécuter des tests automatisés pour vérifier que votre code fonctionne correctement et aide à prévenir les régressions lorsqu'il est modifié.
+
+
+
+== Qu'est-ce qu'un test unitaire ?
+
+Un test unitaire est un test qui vérifie une petite partie de votre code de manière isolée, généralement une seule fonction ou méthode. 
+
+=== ...
+
+L'objectif est de s'assurer que cette unité fonctionne comme prévu dans différents scénarios.
+
+=== Pourquoi utiliser PHPUnit pour les tests unitaires ?
+
+
+=== Automatisation des tests : 
+
+Vous pouvez écrire des tests automatisés pour chaque partie de votre code, ce qui permet de détecter rapidement les erreurs.
+
+
+=== Sécurité lors des modifications : 
+
+Les tests unitaires vous aident à vous assurer que votre code fonctionne toujours correctement après avoir effectué des modifications.
+
+
+=== Documentation : 
+
+Les tests peuvent servir de documentation vivante sur le comportement attendu de votre code.
+
+
+== Installation de PHPUnit
+
+
+PHPUnit s'installe principalement via Composer. 
+
+
+=== Étape 1 : Installer PHPUnit avec Composer
+
+
+Dans votre projet PHP, exécutez la commande suivante pour installer PHPUnit :
+
+[source, bash]
+----
+composer require --dev phpunit/phpunit
+----
+
+=== ...
+
+Cela installe PHPUnit en tant que dépendance de développement dans votre projet.
+
+=== Étape 2 : Vérifier l'installation
+
+
+Pour vérifier que PHPUnit est correctement installé, exécutez la commande suivante :
+
+[source, bash]
+----
+vendor/bin/phpunit --version
+----
+
+
+Cela devrait afficher la version de PHPUnit installée.
+
+== Écriture de tests avec PHPUnit
+
+
+Une fois PHPUnit installé, vous pouvez commencer à écrire vos tests unitaires. 
+
+
+=== ...
+
+Les tests PHPUnit sont généralement placés dans un répertoire tests/ à la racine de votre projet.
+
+=== Structure de base d'un test PHPUnit
+
+
+Voici la structure de base d'un fichier de test PHPUnit :
+
+
+=== ...
+
+
+Un fichier de test est une classe qui hérite de la classe PHPUnit\Framework\TestCase.
+
+=== ...
+
+Chaque test est une méthode de cette classe dont le nom commence par test.
+
+=== ...
+
+
+Vous utilisez des assertions (comme assertEquals, assertTrue, etc.) pour vérifier que les résultats sont corrects.
+
+
+=== Exemple : Test de base avec PHPUnit
+
+
+Supposons que nous ayons une classe Calculatrice avec une méthode addition.
+
+[source, php]
+----
+// src/Calculatrice.php
+class Calculatrice {
+    public function addition(int $a, int $b): int {
+        return $a + $b;
+    }
+}
+----
+
+Nous allons maintenant écrire un test unitaire pour cette méthode.
+
+[source, php]
+----
+// tests/CalculatriceTest.php
+use PHPUnit\Framework\TestCase;
+
+class CalculatriceTest extends TestCase {
+    public function testAddition() {
+        $calc = new Calculatrice();
+        $result = $calc->addition(2, 3);
+        $this->assertEquals(5, $result);  // Vérifie que 2 + 3 = 5
+    }
+}
+----
+
+
+
+== Exécuter les tests
+
+Pour exécuter vos tests, utilisez la commande suivante :
+
+[source, bash]
+----
+vendor/bin/phpunit
+----
+
+
+=== ...
+
+PHPUnit exécutera tous les tests dans le répertoire tests/ et affichera les résultats. 
+
+
+=== ...
+
+Si tous les tests passent, vous verrez un message indiquant le succès. Sinon, des détails sur les tests échoués seront affichés.
+
+
+
+== Assertions dans PHPUnit
+
+Les assertions sont au cœur des tests PHPUnit. 
+
+=== ...
+
+Elles permettent de vérifier que les valeurs obtenues correspondent aux valeurs attendues. Voici quelques assertions courantes :
+
+
+=== Exemple d'utilisation des assertions
+
+
+[source, php]
+----
+class CalculatriceTest extends TestCase {
+    public function testAddition() {
+        $calc = new Calculatrice();
+        $this->assertEquals(5, $calc->addition(2, 3));  // Vérifie que 2 + 3 = 5
+        $this->assertTrue($calc->addition(2, 3) > 0);   // Vérifie que le résultat est positif
+    }
+}
+----
+
+
+== Tests de méthodes exceptionnelles
+
+
+PHPUnit permet également de tester que des exceptions sont correctement levées dans certaines situations. 
+
+
+=== ...
+
+Vous pouvez utiliser la méthode expectException() pour indiquer qu'une méthode devrait lever une exception.
+
+=== Exemple : Test d'une exception
+
+
+Supposons que nous ayons une méthode qui lève une exception si un argument est invalide :
+
+[source, php]
+----
+// src/Calculatrice.php
+class Calculatrice {
+    public function division(int $a, int $b): float {
+        if ($b === 0) {
+            throw new InvalidArgumentException("Division par zéro");
+        }
+        return $a / $b;
+    }
+}
+----
+
+
+=== ...
+
+Voici comment tester que l'exception est correctement levée lorsque le dénominateur est 0.
+
+=== ...
+
+[source, php]
+----
+// tests/CalculatriceTest.php
+class CalculatriceTest extends TestCase {
+    public function testDivisionParZero() {
+        $this->expectException(InvalidArgumentException::class);
+        $calc = new Calculatrice();
+        $calc->division(10, 0);
+    }
+}
+----
+
+
+== Mise en place de Fixtures avec setUp() et tearDown()
+
+
+Lorsque vous avez besoin d'initialiser des ressources (comme des objets) avant chaque test, vous pouvez utiliser la méthode setUp().
+
+=== ...
+
+
+De même, si vous devez nettoyer certaines ressources après chaque test, vous pouvez utiliser tearDown().
+
+=== Exemple : Utilisation de setUp() et tearDown()
+
+[source, php]
+----
+class CalculatriceTest extends TestCase {
+    private $calc;
+
+    protected function setUp(): void {
+        $this->calc = new Calculatrice();  // Initialiser l'objet avant chaque test
+    }
+
+    protected function tearDown(): void {
+        unset($this->calc);  // Nettoyer l'objet après chaque test
+    }
+
+    public function testAddition() {
+        $this->assertEquals(5, $this->calc->addition(2, 3));
+    }
+
+    public function testDivision() {
+        $this->assertEquals(2.5, $this->calc->division(5, 2));
+    }
+}
+----
+
+
+
+
+== Tests de couverture du code (Code Coverage)
+
+
+La couverture de code (code coverage) est une mesure qui indique la proportion de votre code source qui est couverte par des tests. 
+
+
+=== ...
+
+PHPUnit permet de générer des rapports de couverture de code, mais cela nécessite Xdebug ou PCOV.
+
+=== Activer la couverture de code
+
+
+Si vous avez Xdebug ou PCOV installé, vous pouvez exécuter les tests avec couverture de code en utilisant l'option suivante :
+
+[source, bash]
+----
+vendor/bin/phpunit --coverage-html coverage/
+----
+
+
+
+Cela génère un rapport détaillé dans le répertoire coverage/, montrant quelles parties du code sont testées et lesquelles ne le sont pas.
+
+
+=== ...
+
+=== Structure typique d'un projet avec PHPUnit
+
+
+Voici comment organiser un projet PHP typique avec PHPUnit :
+
+[source, ini]
+----
+/mon-projet
+│
+├── /src
+│   └── Calculatrice.php    # Code source
+│
+├── /tests
+│   └── CalculatriceTest.php # Tests unitaires
+│
+├── /vendor                 # Dépendances installées via Composer
+│
+├── composer.json           # Fichier de configuration de Composer
+└── phpunit.xml.dist        # Fichier de configuration de PHPUnit
+----
+
+
+=== ...
+
+
+Le fichier phpunit.xml.dist peut être utilisé pour configurer PHPUnit, spécifier les dossiers de tests, et configurer les options par défaut.
+
+

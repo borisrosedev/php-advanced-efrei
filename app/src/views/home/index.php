@@ -5,21 +5,7 @@
         <title>IT Creator | Home</title>
     </head>
     <body>  
-        <header class="app-header">
-            <a href="/app/public?url=home/index">
-                <figure>
-                    <img src="/app/public/images/logo.webp" alt="Logo de IT Creator">
-                </figure>
-                <span aria-label="Nom de l'application">IT Creator</span>
-            </a>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="#">Connexion</a>
-                    </li>
-                </ul>
-            </nav>
-        </header>
+        <?php include dirname(__DIR__, 1) . "/partials/header.php" ?>
         <main class="app-main home-main">
             <section class="home-main__section home-main__introduction-section">
               <h2>IT Creator</h2>
@@ -36,7 +22,7 @@
                 <section>
                     <section>
                         <figure>
-                            <img src="/app/public/images/network.webp" alt="">
+                            <img src="./images/network.webp" alt="">
                         </figure>
                     </section>
                     <section>

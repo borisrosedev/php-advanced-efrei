@@ -1,20 +1,26 @@
 <?php
 declare(strict_types=1);
+namespace App\Core;
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-require dirname(__DIR__, 2) ."/vendor/autoload.php";
+use App\Config\Config;
+use App\Database\Database;
+use App\Database\MemoryDatabase;
+use App\Traits\FileLoggingTrait;
 
-require dirname(__DIR__,1) ."/traits/FileLoggingTrait.php";
+
 
 class BaseController
 {
     use FileLoggingTrait;
 
-    protected Database $db;
+    protected $db;
+    protected MemoryDatabase $memoryDb;
     public function __construct()
     {
-       
-        $this->db = Database::getInstance();
-        $this->fileLogMessage("base", "BaseController Constructor has been called");
+        
+        $this->db = Database::getInstance(Config::getInstance());
+        $this->memoryDb = MemoryDatabase::getInstance(Config::getInstance());
     }
 
 
@@ -41,15 +47,18 @@ class BaseController
     public function redirect(string $url)
     {
         header("Location: $url");
-        exit;
+        exit(0);
     }
 
     public function loadModel(string $model)
     {
-        $modelPath = __DIR__ . '/../models/' . $model . '.php';
-        if (file_exists($modelPath)) {
-            require_once $modelPath;
-            return new $model();
+        //$modelPath = __DIR__ . '/../models/' . $model . '.php';
+        $modelName = ucfirst($model);
+        $modelNameSpace = "App\\Models\\$modelName";
+     
+        if (class_exists($modelNameSpace)) {
+            //require_once $modelPath;
+            return new $modelNameSpace($this->db);;
         } else {
             die("Le modèle {$model} n'existe pas.");
         }

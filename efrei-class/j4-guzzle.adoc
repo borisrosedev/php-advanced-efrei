@@ -1,0 +1,741 @@
+= Guzzle
+
+== Introduction
+
+Guzzle est une bibliothèque HTTP client pour PHP qui facilite les appels à des API externes en gérant les requêtes HTTP (GET, POST, PUT, DELETE, etc.) et les réponses. 
+
+=== ...
+
+Il est souvent utilisé pour se connecter à des services externes, récupérer des données, envoyer des formulaires, ou authentifier des utilisateurs via des services OAuth ou des API RESTful.
+
+
+== Installation de Guzzle
+
+=== Utilisation de Composer
+
+La façon la plus simple d'installer Guzzle est via Composer. 
+
+=== ...
+
+Une fois Composer installé, exécutez la commande suivante pour installer Guzzle dans votre projet PHP :
+
+[source, bash]
+----
+composer require guzzlehttp/guzzle
+----
+
+=== ...
+
+Cette commande va installer la dernière version de Guzzle ainsi que ses dépendances dans votre projet.
+
+
+== Utilisation de Guzzle pour effectuer des requêtes HTTP
+
+Une fois Guzzle installé, vous pouvez l'utiliser pour effectuer diverses opérations HTTP, telles que des requêtes GET, POST, PUT, DELETE, etc. 
+
+=== ...
+
+Voici comment l'utiliser pour interagir avec des API externes.
+
+
+== Requête GET pour récupérer des données
+
+La requête GET est utilisée pour récupérer des ressources à partir d'une API externe. Guzzle rend cela très simple.
+
+=== Exemple : 
+
+Effectuer une requête GET
+
+=== ...
+
+Supposons que nous nous connectons à une API qui renvoie une liste d'utilisateurs en format JSON.
+
+[source, php]
+----
+require 'vendor/autoload.php';  // Charger automatiquement Guzzle via Composer
+
+use GuzzleHttp\Client;
+
+$client = new Client();  // Créer une instance du client Guzzle
+
+// Effectuer une requête GET vers une API externe
+$response = $client->request('GET', 'https://boris.api.com/users');
+
+// Récupérer le corps de la réponse
+$body = $response->getBody();
+
+// Décoder le JSON pour l'utiliser en tant qu'objet PHP
+$utilisateurs = json_decode($body, true);
+
+// Afficher la liste des utilisateurs
+foreach ($utilisateurs as $utilisateur) {
+    echo $utilisateur['name'] . ' - ' . $utilisateur['email'] . PHP_EOL;
+}
+----
+
+== Points importants :
+
+=== $client->request('GET', 'URL') : 
+
+Effectue une requête GET vers l'URL spécifiée.
+
+=== $response->getBody() :
+
+Récupère le corps de la réponse HTTP.
+
+=== json_decode() : 
+
+Convertit le JSON en un tableau PHP.
+
+
+== Requête POST pour envoyer des données
+
+La méthode POST est utilisée pour envoyer des données à une API externe, comme lors de la soumission d'un formulaire.
+
+=== Exemple : 
+
+Effectuer une requête POST
+
+=== ...
+
+Nous allons soumettre des données (un nouvel utilisateur) à une API via une requête POST.
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+// Données à envoyer
+$data = [
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'username' => 'johndoe'
+];
+
+// Effectuer une requête POST avec les données
+$response = $client->request('POST', 'https://boris.api.com/users', [
+    'json' => $data   // Guzzle encode automatiquement les données en JSON
+]);
+
+// Récupérer et afficher la réponse
+$body = $response->getBody();
+echo $body;
+----
+
+== Points importants :
+
+=== 'json' => $data : 
+
+Guzzle encode automatiquement le tableau $data en JSON et le définit dans le corps de la requête.
+
+=== ...
+
+Vous pouvez également utiliser form_params pour envoyer des données sous forme de formulaire.
+
+
+=== Requête PUT pour mettre à jour des données
+
+La méthode PUT est utilisée pour mettre à jour une ressource existante.
+
+=== Exemple : 
+
+Effectuer une requête PUT
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+// Données à mettre à jour
+$data = [
+    'name' => 'Jane Doe',
+    'email' => 'jane@example.com'
+];
+
+// Effectuer une requête PUT pour mettre à jour un utilisateur existant
+$response = $client->request('PUT', 'https://boris.api.com/users/1', [
+    'json' => $data
+]);
+
+// Récupérer et afficher la réponse
+$body = $response->getBody();
+echo $body;
+----
+
+
+
+== Requête DELETE pour supprimer des données
+
+La méthode DELETE est utilisée pour supprimer une ressource existante.
+
+=== Exemple : 
+
+Effectuer une requête DELETE
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+// Effectuer une requête DELETE pour supprimer un utilisateur
+$response = $client->request('DELETE', 'https://boris.api.com/users/1');
+
+// Vérifier le statut de la réponse
+if ($response->getStatusCode() == 200) {
+    echo "Utilisateur supprimé avec succès.";
+}
+----
+
+
+
+== Gestion des en-têtes HTTP
+
+Lorsque vous travaillez avec des API, il est souvent nécessaire d'envoyer des en-têtes HTTP avec vos requêtes, comme les tokens d'authentification, les types de contenu, etc.
+
+== Ajouter des en-têtes à une requête
+
+=== Exemple : 
+
+Envoyer un en-tête Authorization avec une requête GET
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+$response = $client->request('GET', 'https://api.matchup.com/boris-protected-resource', [
+    'headers' => [
+        'Authorization' => 'Bearer ' . $token,  // Ajouter le token JWT
+        'Accept' => 'application/json'
+    ]
+]);
+
+$body = $response->getBody();
+echo $body;
+----
+
+== Points importants :
+
+=== 'headers' => [...] : 
+
+Vous pouvez ajouter autant d'en-têtes que nécessaire. 
+
+=== ...
+
+Par exemple, pour envoyer un token JWT, vous ajoutez un en-tête Authorization.
+
+
+== Gestion des réponses et des exceptions
+
+
+Guzzle fournit des méthodes pour gérer les réponses et les exceptions de manière propre.
+
+
+=== Gestion des codes de réponse
+
+Vous pouvez récupérer des informations sur la réponse, comme le code de statut HTTP, le type de contenu, etc.
+
+=== Exemple : 
+
+
+Vérification du code de statut HTTP
+
+[source, php]
+----
+$response = $client->request('GET', 'https://alexandre.wizzard.com/users');
+
+// Vérifier si la requête a réussi (code 200)
+if ($response->getStatusCode() == 200) {
+    echo "Requête réussie";
+}
+$response->getStatusCode() : Renvoie le code HTTP (200, 404, etc.).
+$response->getHeader('Content-Type') : Récupère un en-tête spécifique.
+----
+
+
+
+=== Gestion des exceptions
+
+
+Lorsqu'une requête échoue, par exemple en cas de code 404 ou 500, Guzzle lance une exception. Vous pouvez gérer ces exceptions avec des blocs try-catch.
+
+=== Exemple : 
+
+Gestion des exceptions avec try-catch
+
+
+
+[source, php]
+----
+use GuzzleHttp\Exception\RequestException;
+
+try {
+    $response = $client->request('GET', 'https://api.match.com/unknown-resource');
+    $body = $response->getBody();
+    echo $body;
+} catch (RequestException $e) {
+    // Gestion de l'erreur (404, 500, etc.)
+    echo "Erreur : " . $e->getMessage();
+}
+----
+
+=== RequestException : 
+
+C'est l'exception levée lorsque la requête échoue (par exemple, une erreur réseau, un code 404 ou 500).
+
+
+== Exemples pratiques d'utilisation de Guzzle
+
+=== Connexion à une API sécurisée par JWT
+
+Supposons que vous vous connectiez à une API qui utilise un système d'authentification via JWT (JSON Web Token).
+
+=== Étapes :
+
+Envoyer une requête POST pour obtenir un token JWT.
+
+Utiliser ce token pour authentifier les requêtes suivantes.
+
+
+=== Exemple : Authentification via JWT avec Guzzle
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+// 1. Authentification pour obtenir un token JWT
+$response = $client->request('POST', 'https://api.exemple.com/login', [
+    'json' => ['email' => 'user@example.com', 'password' => 'password123']
+]);
+
+$body = $response->getBody();
+$data = json_decode($body, true);
+$token = $data['token'];
+
+
+// 2. Utilisation du token pour accéder à une ressource protégée
+$response = $client->request('GET', 'https://api.exemple.com/protected-resource', [
+    'headers' => ['Authorization' => 'Bearer ' . $token]
+]);
+
+$body = $response->getBody();
+echo $body;
+----
+
+
+== Requêtes asynchrones avec Guzzle
+
+Guzzle permet également d'effectuer des requêtes asynchrones, ce qui signifie que vous pouvez lancer des requêtes sans attendre qu'elles se terminent.
+
+=== Exemple : 
+
+Requêtes asynchrones
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
+
+$client = new Client();
+
+// Lancer plusieurs requêtes simultanément
+$promises = [
+    'users' => $client->getAsync('https://boris.api.com/users'),
+    'posts' => $client->getAsync('https://boris.api.com/posts')
+];
+
+// Attendre que toutes les requêtes se terminent
+$results = Promise\settle($promises)->wait();
+
+// Traiter les résultats
+foreach ($results as $key => $result) {
+    if ($result['state'] === 'fulfilled') {
+        echo "Requête $key réussie : " . $result['value']->getBody();
+    } else {
+        echo "Requête $key échouée";
+    }
+}
+----
+
+
+== SOAP et REST
+
+Les services SOAP et REST sont des approches courantes pour communiquer avec des APIs externes. 
+
+=== ...
+
+Bien que SOAP et REST soient deux approches différentes, toutes deux permettent de consommer des services pour interagir avec des systèmes externes et échanger des données.
+
+
+=== ...
+
+Voici un guide sur la consommation et la manipulation des services SOAP et REST en PHP.
+
+
+== Consommation et manipulation des services SOAP en PHP
+
+SOAP (Simple Object Access Protocol) est un protocole standardisé qui utilise XML pour échanger des informations entre un client et un serveur via HTTP, SMTP, ou d'autres protocoles. 
+
+=== ...
+
+SOAP est plus structuré et rigide que REST, mais offre des fonctionnalités supplémentaires comme des en-têtes pour la sécurité, la transaction, et d'autres métadonnées.
+
+== Connexion à un service SOAP avec PHP
+
+PHP fournit une classe native appelée SoapClient pour consommer des services SOAP.
+
+=== Exemple : Connexion à un service SOAP
+
+
+Imaginons que vous souhaitiez vous connecter à un service SOAP qui expose des informations sur les villes et les prévisions météorologiques.
+
+[source, php]
+----
+try {
+    // Initialiser le client SOAP avec l'URL du WSDL (Web Services Description Language)
+    $client = new SoapClient("http://www.example.com/service?wsdl");
+
+    // Appeler une méthode du service SOAP
+    $result = $client->getWeatherByCity(['cityName' => 'Paris']);
+
+    // Afficher les résultats
+    echo "Prévision météo : " . $result->temperature . "°C à " . $result->city;
+} catch (SoapFault $e) {
+    // Gérer les erreurs SOAP
+    echo "Erreur SOAP : " . $e->getMessage();
+}
+----
+
+== Points importants :
+
+=== SoapClient : 
+
+PHP fournit cette classe pour interagir avec des services SOAP.
+
+=== WSDL (Web Services Description Language) : 
+
+Un fichier XML qui décrit les services SOAP et les méthodes disponibles.
+
+=== Méthode getWeatherByCity() : 
+
+Dans cet exemple, c'est une méthode SOAP appelée avec des paramètres spécifiques (par exemple, cityName).
+
+
+== Manipulation des paramètres dans les services SOAP
+
+Vous pouvez passer des paramètres à une méthode SOAP sous forme de tableau associatif. 
+
+=== ...
+
+SOAP utilise XML pour encoder les données envoyées.
+
+=== Exemple : 
+
+Passer des paramètres complexes à une méthode SOAP
+
+
+[source, php]
+----
+try {
+    $client = new SoapClient("http://www.example.com/service?wsdl");
+
+    // Passer un tableau associatif comme paramètre
+    $params = [
+        'cityName' => 'Paris',
+        'date' => '2023-09-08'
+    ];
+
+    $result = $client->getWeatherByCityAndDate($params);
+
+    echo "Prévision météo : " . $result->temperature . "°C";
+} catch (SoapFault $e) {
+    echo "Erreur SOAP : " . $e->getMessage();
+}
+----
+
+
+=== Gestion des en-têtes dans SOAP
+
+Les en-têtes SOAP sont souvent utilisés pour des fonctionnalités comme la sécurité, l'authentification, et les transactions. 
+
+=== ...
+
+Vous pouvez ajouter des en-têtes à vos requêtes SOAP en utilisant l'objet SoapHeader.
+
+=== Exemple : 
+
+Utilisation des en-têtes SOAP
+
+
+[source, php]
+----
+try {
+    $client = new SoapClient("http://www.example.com/service?wsdl");
+
+    // Créer un en-tête SOAP (par exemple, pour l'authentification)
+    $auth = [
+        'username' => 'user123',
+        'password' => 'password123'
+    ];
+    $header = new SoapHeader("http://www.example.com/namespace", 'AuthHeader', $auth);
+
+    // Ajouter l'en-tête à la requête
+    $client->__setSoapHeaders($header);
+
+    // Appeler une méthode SOAP
+    $result = $client->getWeatherByCity(['cityName' => 'Paris']);
+    echo $result->temperature . "°C";
+} catch (SoapFault $e) {
+    echo "Erreur SOAP : " . $e->getMessage();
+}
+----
+
+
+== Manipulation des exceptions SOAP
+
+Lorsque quelque chose ne va pas avec un appel SOAP, PHP lève une SoapFault, que vous pouvez gérer avec un bloc try-catch.
+
+=== Exemple : Gestion des erreurs SOAP
+[source, php]
+----
+try {
+    $client = new SoapClient("http://www.example.com/service?wsdl");
+
+    $result = $client->getWeatherByCity(['cityName' => 'Paris']);
+    echo "Température à Paris : " . $result->temperature . "°C";
+} catch (SoapFault $e) {
+    echo "Erreur SOAP : " . $e->getMessage();
+}
+----
+
+
+== Consommation et manipulation des services REST en PHP
+
+REST (Representational State Transfer) est une architecture plus légère que SOAP, qui repose sur les méthodes HTTP standard telles que GET, POST, PUT, et DELETE. 
+
+=== ...
+
+Les APIs REST échangent généralement des données en JSON ou en XML et sont plus simples à utiliser que SOAP.
+
+
+== Connexion à un service REST avec cURL
+
+Pour consommer un service REST, vous pouvez utiliser cURL (client URL) intégré dans PHP ou une bibliothèque comme Guzzle (plus avancée).
+
+=== Exemple : 
+
+Requête GET avec cURL
+
+
+[source, php]
+----
+// Initialiser cURL
+$ch = curl_init();
+
+// URL de l'API
+curl_setopt($ch, CURLOPT_URL, "https://api.boris.com/users");
+
+// Retourner le résultat en tant que chaîne au lieu de l'afficher directement
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Exécuter la requête et récupérer la réponse
+$response = curl_exec($ch);
+
+// Vérifier s'il y a des erreurs
+if (curl_errno($ch)) {
+    echo 'Erreur cURL : ' . curl_error($ch);
+} else {
+    // Décoder la réponse JSON
+    $users = json_decode($response, true);
+
+    // Afficher la liste des utilisateurs
+    foreach ($users as $user) {
+        echo $user['name'] . ' - ' . $user['email'] . PHP_EOL;
+    }
+}
+
+// Fermer la connexion cURL
+curl_close($ch);
+----
+
+
+== Requête POST avec cURL
+
+Les requêtes POST sont utilisées pour envoyer des données (comme lors de la soumission de formulaires) à un service REST.
+
+=== Exemple : 
+
+Requête POST avec cURL
+
+
+[source, php]
+----
+// Initialiser cURL
+$ch = curl_init();
+
+// Données à envoyer
+$data = json_encode([
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
+]);
+
+// URL et configuration pour envoyer une requête POST
+curl_setopt($ch, CURLOPT_URL, "https://api.boris.com/users");
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Exécuter la requête
+$response = curl_exec($ch);
+
+// Vérifier et afficher la réponse
+if (curl_errno($ch)) {
+    echo 'Erreur cURL : ' . curl_error($ch);
+} else {
+    echo $response;  // Réponse JSON du serveur
+}
+
+// Fermer la connexion cURL
+curl_close($ch);
+----
+
+== Requêtes PUT et DELETE avec cURL
+
+Les méthodes PUT et DELETE peuvent également être effectuées via cURL en utilisant CURLOPT_CUSTOMREQUEST.
+
+=== Exemple : Requête PUT avec cURL
+[source, php]
+----
+$ch = curl_init();
+
+// Données à mettre à jour
+$data = json_encode([
+    'name' => 'Jane Doe',
+    'email' => 'jane@example.com'
+]);
+
+// Configurer la requête PUT
+curl_setopt($ch, CURLOPT_URL, "https://boris.api.com/users/1");
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Exécuter la requête
+$response = curl_exec($ch);
+curl_close($ch);
+
+// Afficher la réponse
+echo $response;
+----
+
+
+=== Exemple : 
+
+Requête DELETE avec cURL
+
+[source, php]
+----
+$ch = curl_init();
+
+// Configurer la requête DELETE
+curl_setopt($ch, CURLOPT_URL, "https://boris.api.com/users/1");
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Exécuter la requête
+$response = curl_exec($ch);
+curl_close($ch);
+
+// Afficher la réponse
+echo $response;
+----
+
+
+
+== Consommation des services REST avec Guzzle
+
+Pour une approche plus sophistiquée des services REST, Guzzle est une bibliothèque HTTP client populaire pour effectuer des requêtes avec plus de fonctionnalités que cURL.
+
+
+== Requête GET avec Guzzle
+
+=== Exemple : Requête GET
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+// Effectuer une requête GET
+$response = $client->request('GET', 'https://boris.api.com/users');
+
+// Récupérer et afficher le corps de la réponse
+$body = $response->getBody();
+echo $body;
+----
+
+
+== Requête POST avec Guzzle
+
+=== Exemple : Requête POST avec Guzzle
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+// Données à envoyer
+$data = [
+    'json' => [
+        'name' => 'John Doe',
+        'email' => 'john@example.com'
+    ]
+];
+
+// Envoyer une requête POST
+$response = $client->request('POST', 'https://boris.api.com/users', $data);
+
+// Afficher la réponse
+$body = $response->getBody();
+echo $body;
+----
+
+
+== Gérer les en-têtes avec Guzzle
+
+=== Exemple : 
+
+Ajouter des en-têtes HTTP dans une requête GET
+
+
+[source, php]
+----
+use GuzzleHttp\Client;
+
+$client = new Client();
+
+$response = $client->request('GET', 'https://api.boris.com/resource', [
+    'headers' => [
+        'Authorization' => 'Bearer YOUR_TOKEN',
+        'Accept' => 'application/json'
+    ]
+]);
+
+echo $response->getBody();
+----
+

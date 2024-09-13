@@ -1,12 +1,28 @@
 <?php
-require_once __DIR__ . '/../src/config/config.php';
-require_once __DIR__ . '/../src/core/Router.php';
-require_once __DIR__ . '/../src/database/Database.php';
+namespace App\Public;
+session_start();
+use App\Config\Config;
+use App\Core\Router;
 
-$db = Database::getInstance();
+use App\Database\Database;
+use Fiber;
 
-$url = isset($_GET['url']) ? $_GET['url'] : 'home/index';
+require_once dirname(__DIR__, 1).'/vendor/autoload.php';
+
+$fiber = new Fiber(function () {
+    Fiber::suspend(Database::getInstance(Config::getInstance()));
+});
+
+$db = $fiber->start();
+$url = $_GET['url'] ?? '/home/index';
 Router::route($url, $db);
+$fiber->resume();
 
-?>
+
+
+
+
+
+
+
 

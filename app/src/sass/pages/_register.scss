@@ -1,0 +1,52 @@
+@use "../abstracts/mixins";
+
+.register-main {
+    @include mixins.flex-box(center, center, column);
+    a {
+        color: #fff;
+    }
+
+    aside {
+        margin-block: 10px;
+    }
+    h1 {
+        font-size: 30px;
+        margin-block: 10px;
+
+    }
+    .register-main__central-section {
+        width: 400px;
+
+        display: flex;  
+        flex-direction: column  
+    
+    }
+    .register-form__fields-section {
+
+        @include mixins.flex-box(flex, flex-start, column);
+
+    }
+    .custom-field {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-block: 10px;
+    }
+    .register-form__buttons-section {
+        margin-block: 10px;
+        @include mixins.flex-box(space-between, center, row); 
+    }
+}
+
+
+//------------------------------------MOBILE RWD------------------
+@media (0px < width <= 435px) {
+    .register-main {
+       
+        .register-main__central-section {
+            width: 95%; 
+        
+        }
+     
+    }
+}

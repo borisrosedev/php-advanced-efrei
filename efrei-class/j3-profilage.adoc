@@ -84,7 +84,11 @@ Le temps d'exécution est ensuite affiché en secondes.
 ===  Mesurer la mémoire consommée
 
 
-En plus du temps d'exécution, il est parfois utile de savoir combien de mémoire une section de code consomme. PHP fournit la fonction memory_get_usage() pour obtenir la mémoire utilisée par le script en octets.
+En plus du temps d'exécution, il est parfois utile de savoir combien de mémoire une section de code consomme. 
+
+=== ...
+
+PHP fournit la fonction memory_get_usage() pour obtenir la mémoire utilisée par le script en octets.
 
 [source, php]
 ----
@@ -137,7 +141,10 @@ Xdebug est l'un des outils de profilage les plus populaires en PHP.
 
 === ...
 
-Il permet de profiler un script PHP en générant un fichier de profilage (fichier cachegrind) que vous pouvez analyser avec des outils comme KCacheGrind ou QCacheGrind.
+Il permet de profiler un script PHP en générant un fichier de profilage (fichier cachegrind) que vous pouvez analyser avec des outils comme:
+[%step]
+* KCacheGrind 
+* QCacheGrind.
 
 === Installation de Xdebug :
 
@@ -178,7 +185,11 @@ xdebug.profiler_output_name : Définit le format du nom de fichier de sortie.
 
 === Utilisation :
 
-Une fois activé, Xdebug générera un fichier de profilage (cachegrind.out.<pid>) chaque fois que vous exécutez un script PHP. Ce fichier peut ensuite être analysé avec des outils comme KCacheGrind ou QCacheGrind pour visualiser les fonctions les plus coûteuses.
+Une fois activé, Xdebug générera un fichier de profilage (cachegrind.out.<pid>) chaque fois que vous exécutez un script PHP. 
+
+=== ...
+
+Ce fichier peut ensuite être analysé avec des outils comme KCacheGrind ou QCacheGrind pour visualiser les fonctions les plus coûteuses.
 
 == Blackfire
 
@@ -588,6 +599,8 @@ L'optimisation des requêtes SQL est une étape essentielle dans le développeme
 === ...
 
 Une bonne optimisation des requêtes SQL permet d'améliorer la performance globale, de réduire les temps de chargement, et de diminuer l'utilisation des ressources.
+
+
 
 
 

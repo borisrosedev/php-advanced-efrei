@@ -1,0 +1,250 @@
+= Le NullSafe Operator et la Constructor Property Promotion 
+
+
+== Introduction
+
+Avec les versions récentes de PHP, des améliorations notables ont été introduites pour simplifier le code et le rendre plus lisible. Parmi ces améliorations, on trouve:
+
+=== ...
+[%step]
+
+* le Nullsafe Operator 
+* la Constructor Property Promotion. 
+
+
+=== ...
+
+
+Ces fonctionnalités permettent de réduire le code boilerplate et de gérer plus facilement certaines opérations courantes.
+
+
+
+
+
+== Nullsafe Operator (?->)
+
+
+=== Qu'est-ce que le Nullsafe Operator ?
+
+
+Le Nullsafe Operator (?->) a été introduit dans PHP 8 et permet de simplifier la manipulation des objets qui peuvent potentiellement être null. 
+
+
+=== ...
+
+Il remplace les vérifications manuelles de null avant d'accéder aux propriétés ou méthodes d'un objet, ce qui rend le code plus lisible et concis.
+
+
+=== Problème avec le code avant PHP 8
+
+Avant PHP 8, il était courant d'utiliser des structures de contrôle comme if pour vérifier si un objet était null avant d'accéder à ses méthodes ou propriétés, afin d'éviter des erreurs fatales.
+
+=== Exemple : Code sans le Nullsafe Operator
+[source, php]
+----
+if ($user !== null && $user->getProfile() !== null) {
+    echo $user->getProfile()->getAddress();
+}
+----
+
+
+
+Dans ce code, plusieurs vérifications doivent être effectuées pour éviter les erreurs si $user ou $user->getProfile() retourne null.
+
+=== Utilisation du Nullsafe Operator (?->)
+
+
+Avec le Nullsafe Operator, PHP simplifie cette gestion. 
+
+=== ...
+
+Vous pouvez directement enchaîner les appels avec ?-> pour retourner null si un objet est absent, sans générer d'erreur.
+
+=== Exemple : Code avec le Nullsafe Operator
+[source, php]
+----
+echo $user?->getProfile()?->getAddress();
+----
+
+
+=== Résultat :
+
+
+Si $user ou $user->getProfile() est null, l'expression retourne simplement null sans erreur.
+
+
+Si toutes les valeurs sont présentes, l'adresse est affichée.
+
+
+=== Avantages du Nullsafe Operator
+
+=== Réduction du code boilerplate : 
+
+Plus besoin de vérifier manuellement les null.
+
+
+=== Lisibilité accrue : 
+
+Le code est plus simple et facile à comprendre.
+
+=== Sécurité : 
+
+Évite les erreurs fatales liées à l'accès à des propriétés ou méthodes sur null.
+
+=== Exemple supplémentaire :
+[source, php]
+----
+$adresse = $user?->getProfile()?->getAddress()?->city;
+echo $adresse ?? 'Ville inconnue';
+----
+
+
+
+Si l'un des objets ou méthodes dans la chaîne est null, $adresse sera null et 'Ville inconnue' sera affiché.
+
+== Constructor Property Promotion
+
+=== Qu'est-ce que la Constructor Property Promotion ?
+
+
+La Constructor Property Promotion est une fonctionnalité introduite dans PHP 8 qui simplifie la déclaration et l'initialisation des propriétés d'une classe directement dans le constructeur. 
+
+
+=== ...
+
+Cette fonctionnalité élimine le besoin d'écrire du code redondant pour initialiser les propriétés.
+
+=== Problème avec le code avant PHP 8
+
+
+Avant PHP 8, l'initialisation des propriétés dans le constructeur nécessitait beaucoup de répétitions : 
+
+=== ...
+
+il fallait déclarer chaque propriété, puis les initialiser dans le constructeur.
+
+=== Exemple : Code sans Constructor Property Promotion
+
+
+[source, php]
+----
+class User {
+    private string $name;
+    private int $age;
+
+    public function __construct(string $name, int $age) {
+        $this->name = $name;
+        $this->age = $age;
+    }
+}
+----
+
+
+=== Utilisation de la Constructor Property Promotion
+
+
+Avec la Constructor Property Promotion, vous pouvez déclarer et initialiser les propriétés de la classe directement dans la signature du constructeur. 
+
+=== ...
+
+
+Il n'est plus nécessaire de déclarer les propriétés séparément ou d'écrire le code d'initialisation manuellement.
+
+=== Exemple : Code avec Constructor Property Promotion
+
+
+[source, php]
+----
+class User {
+    public function __construct(
+        private string $name,
+        private int $age
+    ) {}
+}
+----
+
+=== Avantages de la Constructor Property Promotion
+
+=== Réduction du code répétitif : 
+
+Plus besoin de déclarer les propriétés et de les initialiser dans le constructeur.
+
+
+=== Meilleure lisibilité : 
+
+Le constructeur est plus compact et clair.
+
+
+=== Rapidité d'écriture : 
+
+Moins de code à écrire, ce qui accélère le développement.
+
+=== Précisions supplémentaires
+
+=== Visibilité des propriétés : 
+
+
+Vous pouvez toujours utiliser les modificateurs de visibilité (private, protected, public) directement dans le constructeur.
+
+
+=== Types des propriétés : 
+
+Les types des propriétés peuvent être définis dans le constructeur comme d'habitude.
+
+
+=== Exemple avec des valeurs par défaut :
+[source, php]
+----
+class User {
+    public function __construct(
+        private string $name,
+        private int $age = 18 // Valeur par défaut
+    ) {}
+}
+
+$user = new User('Alice'); // $age sera 18 par défaut
+----
+
+
+=== Exemple avec d'autres modificateurs de visibilité :
+
+[source, php]
+----
+class Product {
+    public function __construct(
+        public string $name,
+        protected float $price,
+        private int $stock
+    ) {}
+}
+
+$product = new Product('Laptop', 999.99, 10);
+----
+
+
+Dans cet exemple, les modificateurs de visibilité public, protected, et private sont utilisés directement dans le constructeur pour définir la portée des propriétés.
+
+
+== Autres simplifications notables en PHP 8.x
+
+
+=== Opérateur d'assignation null coalescent (??=)
+
+
+L'opérateur d'assignation null coalescent (??=), introduit dans PHP 7.4, permet de simplifier l'assignation d'une valeur par défaut si une variable est null.
+
+=== Exemple :
+
+
+[source, php]
+----
+$val = null;
+$val ??= 'Valeur par défaut'; // Assigne 'Valeur par défaut' car $val est null
+echo $val; // Affiche : "Valeur par défaut"
+----
+
+
+
+
+
+

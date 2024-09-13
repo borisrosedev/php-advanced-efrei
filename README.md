@@ -31,4 +31,14 @@ Cela peut être de:
 - Utiliser docker
 - Utiliser JS pour faire ce que PHP ne peut pas faire
 
+## Access au php.ini
+
+### Sous MAC avec une installation via homebrew :
+/opt/homebrew/etc/php/8.3
+
+###
+```bash 
+    pecl install redis #installer l'extension redis pour php en plus d'avoir votre image redist ou si ça ne marche pas
+    composer require predis/predis
+```
 

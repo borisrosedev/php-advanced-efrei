@@ -1,0 +1,21 @@
+.custom-form {
+  input {
+  
+    &:focus,
+    &:active {
+
+      --bulma-input-focus-h: 0;
+      --bulma-input-focus-s: 0;
+      --bulma-input-focus-l: 0;
+      &:valid {
+        outline: var(--bulma-link) 1px solid;
+        color: var(--bulma-link);
+      }
+
+      &:invalid {
+        outline: var(--bulma-danger) 1px solid;
+        color: var(--bulma-danger);
+      }
+    }
+  }
+}

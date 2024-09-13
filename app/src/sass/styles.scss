@@ -10,5 +10,12 @@
 @use "./layout/app-main";
 @use "./layout/app-footer";
 
+
+// components
+@use "./components/custom-form.scss";
+
 //pages
 @use "./pages/home";
+@use "./pages/login";
+@use "./pages/register";
+@use "./pages/dashboard";

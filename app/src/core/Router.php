@@ -1,8 +1,12 @@
 <?php
-declare(strict_types=1);
+namespace App\Core;
+
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+
 interface RouteContract
 {
-    public static function route(string $url, PDO $db);
+    public static function route(string $url, mixed $db);
 }
 
 
@@ -21,18 +25,10 @@ class Router implements RouteContract
         // ici $action est égale à index
         $param = array_shift($url);
         // ic $param es égale à null
-        $controllerPath = __DIR__ . '/../controllers/' . $controllerName . '.php';
-
-        if (file_exists($controllerPath)) {
-
-            require_once $controllerPath;
-            /*
-                The require_once statement is identical to 
-                require except PHP will check if the file has already been included, and if so, 
-                not include (require) it again.
-            */
-
-            $controller = new $controllerName($db);
+        //$controllerPath = __DIR__ . '/../controllers/' . $controllerName . '.php';
+        $controllerNamespace = "App\\Controllers\\$controllerName";
+        if (class_exists($controllerNamespace)) {
+            $controller = new $controllerNamespace($db);
 
             if (method_exists($controller, $action)) {
                 $controller->$action($param);
@@ -40,7 +36,9 @@ class Router implements RouteContract
                 echo "⛔️ Action Not Found";
             }
         } else {
-            echo "⛔️ Controller Not Found";
+            echo "⛔️ Class Not Found";
         }
     }
 }
+
+?>

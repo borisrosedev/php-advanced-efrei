@@ -1,0 +1,319 @@
+= Les Fibres
+
+== Intrdouction
+
+Avec l'introduction des fibres dans PHP 8.1, PHP a fait un grand pas vers une meilleure gestion de l'asynchronie et du concurrentisme. 
+
+
+=== ...
+
+Bien que PHP soit traditionnellement un langage synchrone (exécutant une tâche à la fois), ...
+
+
+=== ...
+
+
+... les fibres ouvrent de nouvelles possibilités pour permettre une exécution non bloquante de code, facilitant l'intégration d'opérations asynchrones.
+
+=== ...
+
+Ces opérations peuvent être: 
+[%step]
+* les requêtes réseau, 
+* les opérations d'E/S, 
+* la gestion des bases de données de manière plus efficace.
+
+
+== Les Fibres en PHP : Qu'est-ce que c'est ?
+
+Les fibres sont un mécanisme léger d'exécution concurrente introduit dans PHP 8.1. 
+
+
+=== ...
+
+Elles permettent d'interrompre et de reprendre des blocs de code sans bloquer l'exécution du script principal, en offrant un contrôle plus fin sur le flux d'exécution asynchrone.
+
+=== ...
+
+Contrairement aux threads ou aux processus, les fibres ne fonctionnent pas en parallèle, mais permettent de suspendre et de reprendre l'exécution d'une tâche à différents points, ...
+
+
+=== ...
+
+
+... ce qui permet de mieux gérer des opérations asynchrones ou des tâches longues sans bloquer le reste du script.
+
+=== Fonctionnement des Fibres
+
+Les fibres fonctionnent en permettant au code d'être exécuté de manière "pausée", en utilisant la méthode Fiber::suspend() pour suspendre l'exécution, puis Fiber::resume() pour la reprendre. 
+
+
+=== ...
+
+Cela permet d'éviter les blocages dans l'exécution du script.
+
+
+=== Exemple simple de Fibre
+Voici un exemple de base d'utilisation d'une fibre :
+
+[source, php]
+----
+$fibre = new Fiber(function() {
+    echo "Début de la fibre" . PHP_EOL;
+    
+    // Suspendre l'exécution de la fibre et retourner une valeur
+    $valeur = Fiber::suspend("Fibre suspendue");
+
+    // Reprise de la fibre avec la valeur transmise
+    echo "Reprise de la fibre avec : " . $valeur . PHP_EOL;
+});
+
+echo "Avant la fibre" . PHP_EOL;
+
+// Démarrer la fibre, elle s'arrête à la suspension
+$valeurRetournee = $fibre->start();
+
+echo "Fibre suspendue : " . $valeurRetournee . PHP_EOL;
+
+// Reprendre la fibre et passer une nouvelle valeur
+$fibre->resume("Nouvelle donnée");
+
+echo "Après la fibre" . PHP_EOL;
+----
+
+=== Résultat de l'exécution :
+[source, txt]
+----
+Avant la fibre
+Début de la fibre
+Fibre suspendue : Fibre suspendue
+Reprise de la fibre avec : Nouvelle donnée
+Après la fibre
+----
+
+=== Points importants :
+
+=== Fiber::suspend() : 
+
+Suspend l'exécution de la fibre et renvoie une valeur à l'appelant.
+
+=== Fiber::resume() : 
+
+Reprend l'exécution de la fibre et permet de lui transmettre une nouvelle valeur.
+
+=== Fiber::start() : 
+
+Lance la fibre.
+
+
+== Gestion de l'Asynchronie avec les Fibres
+
+
+Bien que PHP ne soit pas intrinsèquement asynchrone, les fibres permettent d'implémenter des modèles d'exécution  ...
+
+
+=== ...
+
+
+... qui se rapprochent des coroutines ou de l'asynchronie, comme ce que l'on trouve dans des langages comme JavaScript ou Python.
+
+=== Combiner les Fibres avec des Opérations Asynchrones
+
+En utilisant les fibres, vous pouvez facilement gérer des opérations qui pourraient prendre du temps, ...
+
+=== ...
+
+... comme les appels à des APIs externes, les requêtes réseau ou les lectures/écritures sur le disque, de manière non bloquante.
+
+=== Exemple : 
+
+Simuler une opération asynchrone
+
+
+[source, php]
+----
+function operationAsynchrone(): void {
+    echo "Démarrage de l'opération asynchrone" . PHP_EOL;
+
+    // Suspendre la fibre en simulant une opération réseau lente
+    Fiber::suspend();
+
+    echo "Reprise après une opération asynchrone" . PHP_EOL;
+}
+
+$fibre = new Fiber(function() {
+    operationAsynchrone();
+});
+
+// Démarrer l'opération
+$fibre->start();
+
+echo "Faire autre chose pendant que l'opération est suspendue..." . PHP_EOL;
+
+// Simuler la fin de l'opération asynchrone en reprenant la fibre
+$fibre->resume();
+----
+
+
+=== Résultat de l'exécution :
+[source, txt]
+----
+Démarrage de l'opération asynchrone
+Faire autre chose pendant que l'opération est suspendue...
+Reprise après une opération asynchrone
+----
+
+
+
+=== Gestion des E/S et des tâches longues
+
+
+Les fibres sont particulièrement utiles pour gérer les E/S non bloquantes, comme les lectures réseau ou les accès aux fichiers, ...
+
+=== ...
+
+... en laissant le programme principal continuer à s'exécuter pendant que la fibre attend que l'opération se termine.
+
+=== Exemple : 
+
+Intégration avec des requêtes réseau
+
+
+=== ...
+
+Vous pouvez utiliser une bibliothèque comme ReactPHP ou Amp pour les E/S asynchrones avec les fibres. 
+
+=== ...
+
+Ces bibliothèques gèrent les opérations d'entrée/sortie asynchrones tout en vous permettant d'utiliser les fibres pour organiser vos appels non bloquants.
+
+
+== Fibres vs Generator
+
+
+Les fibres sont parfois comparées aux générateurs (introduits en PHP 5.5), mais elles sont bien plus puissantes. 
+
+== ...
+
+Alors que les générateurs vous permettent d'itérer sur un ensemble de valeurs et de suspendre leur exécution avec yield, ...
+
+=== ...
+
+... les fibres permettent de suspendre et reprendre n'importe quel bloc de code, pas seulement des itérations.
+
+=== ...
+
+
+=== Différence entre Générateur et Fibre
+
+
+=== Générateurs (yield) : 
+
+Suspendent uniquement des itérations sur une collection de valeurs.
+
+=== Fibres : 
+
+Suspendent et reprennent n'importe quel bloc de code de manière générale, sans se limiter aux boucles d'itération.
+
+
+== Exemple : Générateur vs Fibre
+
+=== Générateur :
+
+[source, php]
+----
+function monGenerateur() {
+    yield "Première valeur";
+    yield "Deuxième valeur";
+}
+
+foreach (monGenerateur() as $valeur) {
+    echo $valeur . PHP_EOL;
+}
+----
+
+
+=== Fibre :
+
+[source, php]
+----
+$fibre = new Fiber(function() {
+    echo "Début de la fibre" . PHP_EOL;
+    Fiber::suspend();
+    echo "Reprise de la fibre" . PHP_EOL;
+});
+
+$fibre->start();
+echo "Faire autre chose pendant la suspension..." . PHP_EOL;
+$fibre->resume();
+----
+
+
+
+== Applications des Fibres
+
+=== Gestion des tâches en parallèle
+
+Même si PHP reste un langage synchrone, les fibres permettent d'implémenter des modèles de concurrence. 
+
+=== ...
+
+Par exemple, vous pouvez exécuter plusieurs fibres de manière à traiter des tâches indépendantes sans bloquer l'exécution du reste du programme.
+
+
+=== Amélioration des frameworks d'asynchronie
+
+Des bibliothèques comme ReactPHP et Amp peuvent tirer parti des fibres pour améliorer la gestion de l'asynchronie et des I/O non bloquantes en PHP.
+
+
+== Comparaison des Fibres avec l'asynchronie dans d'autres langages
+
+
+=== PHP avec Fibres : 
+
+Permet des suspensions et reprises manuelles, mais n'a pas d'asynchronie native comme JavaScript (avec async/await) ou Python (avec asyncio).
+
+
+=== JavaScript : 
+
+Les tâches asynchrones sont gérées via l'API Promise, avec async/await pour une syntaxe plus simple.
+
+=== Python : 
+
+Utilise async def et await pour gérer les appels asynchrones via l'API asyncio.
+
+
+=== Exemple d'asynchronie en JavaScript (comparaison)
+
+
+[source, javascript]
+----
+async function fetchData() {
+    let response = await fetch('https://boris.api.com/products');
+    let products = await response.json();
+    console.log(products);
+}
+----
+
+Bien que PHP n'ait pas d'async/await natif, les fibres se rapprochent de ce paradigme en permettant de suspendre et reprendre des blocs de code.
+
+
+
+== Limitations actuelles des Fibres
+
+
+=== Exécution synchrone : 
+
+
+Les fibres ne sont pas des threads et n'offrent pas de parallélisme réel. 
+
+
+=== ...
+
+Elles fonctionnent dans un seul thread et ne permettent pas une exécution concurrente sur plusieurs cœurs du processeur.
+
+
+=== Pas d'await natif : 
+
+Contrairement à d'autres langages, PHP ne dispose pas encore de support natif pour async/await. Les fibres sont un pas dans cette direction, mais il faut encore gérer manuellement les suspensions et les reprises.
+

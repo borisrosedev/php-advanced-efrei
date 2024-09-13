@@ -12,20 +12,19 @@
     height: 100vh;
     @include mixins.flex-box(center, center, column);
     & > section {
+      @include mixins.flex-box(center, center, column);
       p {
         text-align: center;
         margin-block: 30px;
       }
-
-      @include mixins.flex-box(center, center, column);
     }
   }
 
   &__functionalities-section {
     flex-direction: column;
     & > section {
-      margin-block: 30px;
       @include mixins.flex-box(center);
+      margin-block: 30px;
       & > section:last-of-type {
         padding-inline: 30px;
         & > section {
@@ -42,8 +41,8 @@
       align-self: center;
     }
     ul {
-      margin-block: 30px;
       @include mixins.flex-box(space-evenly, center, row);
+      margin-block: 30px;
       figure {
         @include mixins.circular-figure(60px);
       }

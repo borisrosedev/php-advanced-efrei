@@ -1,0 +1,307 @@
+= La manipulation des réponses JSON et des en-têtes HTTP
+
+
+== Introduction
+
+La manipulation des réponses JSON et des en-têtes HTTP est essentielle dans le développement d'API en PHP, car les réponses JSON sont le format de données le plus utilisé pour communiquer avec des clients (applications web ou mobiles). 
+
+
+=== ...
+
+L'authentification via JWT (JSON Web Tokens) est une méthode standard et sécurisée pour authentifier les utilisateurs dans une API.
+
+=== ...
+
+
+== Manipulation des réponses JSON en PHP
+
+
+=== Génération et envoi d'une réponse JSON
+
+Pour envoyer une réponse JSON à un client (généralement une application web ou mobile), vous devez :
+
+Définir l'en-tête HTTP pour indiquer que la réponse est au format JSON.
+Utiliser json_encode() pour convertir les données PHP en JSON.
+
+=== Exemple de génération d'une réponse JSON :
+[source, php]
+----
+// Données à envoyer sous forme de réponse JSON
+$data = [
+    "status" => "success",
+    "message" => "Données récupérées avec succès",
+    "utilisateurs" => [
+        ["id" => 1, "nom" => "boris Doe", "email" => "boris@example.com"],
+        ["id" => 2, "nom" => "Jane Doe", "email" => "jane@example.com"]
+    ]
+];
+
+// Définir l'en-tête HTTP pour spécifier le format de la réponse
+header('Content-Type: application/json');
+
+// Envoyer la réponse JSON
+echo json_encode($data);
+----
+
+=== Codes de statut HTTP dans une réponse JSON
+
+En plus des données JSON, il est important de renvoyer un code de statut HTTP approprié pour indiquer le succès ou l'échec de la requête.
+
+=== Exemple avec un code de statut HTTP :
+[source, php]
+----
+// Définir l'en-tête Content-Type et le code HTTP
+header('Content-Type: application/json');
+http_response_code(200);  // 200 OK
+
+$data = ["status" => "success", "message" => "Opération réussie"];
+echo json_encode($data);
+----
+
+
+=== Gestion des erreurs dans les réponses JSON
+
+Lorsque vous rencontrez une erreur dans le traitement d'une requête, il est important de renvoyer une réponse JSON détaillant l'erreur et un code HTTP approprié, comme 400 Bad Request ou 404 Not Found.
+
+=== Exemple de réponse d'erreur JSON :
+[source, php]
+----
+header('Content-Type: application/json');
+http_response_code(404);  // 404 Not Found
+
+$data = ["status" => "error", "message" => "Utilisateur non trouvé"];
+echo json_encode($data);
+----
+
+
+== Manipulation des en-têtes HTTP en PHP
+
+=== Définir les en-têtes HTTP
+
+Les en-têtes HTTP sont essentiels pour communiquer des informations supplémentaires avec les réponses. Par exemple, l'en-tête Content-Type informe le client que la réponse est au format JSON.
+
+=== Exemple : Définir l'en-tête Content-Type
+
+[source, php]
+----
+header('Content-Type: application/json');
+----
+
+=== En-têtes spécifiques à la sécurité
+
+=== Access-Control-Allow-Origin : 
+
+Utilisé pour les requêtes CORS (Cross-Origin Resource Sharing) afin de spécifier quelles origines sont autorisées à accéder aux ressources de l'API.
+
+=== Authorization : 
+
+Utilisé pour inclure des jetons d'authentification, tels que les JWT.
+
+=== Exemple : 
+
+En-têtes CORS pour autoriser les requêtes de tous les domaines
+
+[source, php]
+----
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+----
+
+== Authentification via JWT (JSON Web Tokens)
+
+=== Qu'est-ce que JWT ?
+
+Les JSON Web Tokens (JWT) sont des jetons sécurisés utilisés pour l'authentification et l'échange sécurisé d'informations. 
+
+=== ...
+
+=== Ils contiennent trois parties : 
+
+header, payload, et signature, qui sont encodées en Base64 et signées numériquement.
+
+=== ...
+
+Un JWT est généré après une authentification réussie, puis transmis au client. Le client l'utilise ensuite pour prouver son identité lors de requêtes ultérieures, en incluant le jeton dans l'en-tête Authorization.
+
+=== Installation de la bibliothèque JWT avec Composer
+Pour utiliser JWT en PHP, la bibliothèque Firebase JWT est couramment utilisée. Vous pouvez l'installer avec Composer.
+
+[source, bash]
+----
+composer require firebase/php-jwt
+----
+
+
+=== Génération d'un JWT en PHP
+Voici un exemple de génération d'un JWT après l'authentification d'un utilisateur.
+
+=== Exemple : 
+
+Générer un JWT après authentification
+
+[source, php]
+----
+require_once 'vendor/autoload.php';
+use Firebase\JWT\JWT;
+
+
+
+function generateJWT($userId, $secretKey) {
+    $issuedAt = time();
+    $expirationTime = $issuedAt + 3600;  // Le jeton expire après 1 heure
+    $payload = [
+        'iat' => $issuedAt,            // Heure de création
+        'exp' => $expirationTime,      // Expiration
+        'userId' => $userId            // ID de l'utilisateur
+    ];
+
+    // Générer le JWT
+    $jwt = JWT::encode($payload, $secretKey, 'HS256');
+    return $jwt;
+}
+
+// Clé secrète pour signer le JWT (ne pas la partager)
+$secretKey = 'votre_cle_secrete';
+
+// Générer le JWT pour l'utilisateur 1
+$jwt = generateJWT(1, $secretKey);
+echo json_encode(['token' => $jwt]);
+----
+
+
+=== Validation d'un JWT
+
+Lorsqu'une requête arrive avec un JWT dans l'en-tête Authorization, il est nécessaire de valider ce JWT pour s'assurer qu'il est valide et non expiré.
+
+=== Exemple : Vérifier un JWT dans une requête
+
+
+[source, php]
+----
+require_once 'vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+function validateJWT($jwt, $secretKey) {
+    try {
+        $decoded = JWT::decode($jwt, new Key($secretKey, 'HS256'));
+        return $decoded;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+// Récupérer le JWT depuis l'en-tête Authorization
+$authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+    $jwt = $matches[1];
+} else {
+    http_response_code(401);
+    echo json_encode(["message" => "Token manquant ou invalide"]);
+    exit;
+}
+
+// Valider le JWT
+$secretKey = 'votre_cle_secrete';
+$decodedToken = validateJWT($jwt, $secretKey);
+
+if ($decodedToken) {
+    echo json_encode(["message" => "Accès autorisé", "userId" => $decodedToken->userId]);
+} else {
+    http_response_code(401);
+    echo json_encode(["message" => "Token invalide ou expiré"]);
+}
+----
+
+== Utilisation du JWT dans l'en-tête Authorization
+
+Le JWT est envoyé avec chaque requête dans l'en-tête Authorization sous la forme Bearer <token>.
+
+=== Exemple de requête avec JWT via cURL ou Postman :
+
+[source, php]
+----
+curl -H "Authorization: Bearer <votre_jwt>" http://votre-api.com/utilisateurs
+----
+
+== Meilleures pratiques pour l'utilisation de JWT et les réponses JSON
+
+=== Stocker le JWT de manière sécurisée
+
+Dans les applications web : Stocker le JWT dans le localStorage ou dans un cookie HTTP-only.
+
+=== ...
+
+Dans les applications mobiles : Stocker le JWT de manière sécurisée dans le Keychain ou Secure Storage.
+
+=== Révocation des JWT
+
+Les JWT sont stateless, ce qui signifie que le serveur ne garde pas de trace des jetons déjà émis. 
+
+=== ...
+
+Cependant, pour implémenter la révocation des jetons, vous pouvez maintenir une liste noire (blacklist) de JWT invalidés dans une base de données ou une solution de cache.
+
+=== Sécuriser les réponses JSON
+Limiter l'exposition des données sensibles : Lors de la génération de réponses JSON, assurez-vous de ne pas inclure de données sensibles ou confidentielles dans le payload.
+
+
+=== Utiliser HTTPS : 
+
+Transmettez toujours les données JSON, y compris les JWT, via des connexions HTTPS pour éviter les interceptions par des attaquants (attaque de type MITM).
+
+== Exemple complet : Authentification JWT et réponses JSON
+Voici un exemple complet d'API PHP qui utilise JWT pour l'authentification et renvoie des réponses JSON.
+
+[source, php]
+----
+require_once 'vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+// Clé secrète pour JWT
+$secretKey = 'votre_cle_secrete';
+
+// Simuler une base de données simple
+$users = [
+    ['id' => 1, 'email' => 'boris@example.com', 'password' => 'password123']
+];
+
+// Authentification de l'utilisateur et génération du JWT
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/login') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    foreach ($users as $user) {
+        if ($user['email'] === $data['email'] && $user['password'] === $data['password']) {
+            $jwt = JWT::encode(['userId' => $user['id'], 'exp' => time() + 3600], $secretKey, 'HS256');
+            echo json_encode(['token' => $jwt]);
+            exit;
+        }
+    }
+
+    http_response_code(401);
+    echo json_encode(['message' => 'Identifiants invalides']);
+}
+
+// Accès protégé par JWT
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/utilisateurs') {
+    $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+
+    if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+        $jwt = $matches[1];
+        try {
+            $decoded = JWT::decode($jwt, new Key($secretKey, 'HS256'));
+            echo json_encode(['message' => 'Accès autorisé', 'userId' => $decoded->userId]);
+        } catch (Exception $e) {
+            http_response_code(401);
+            echo json_encode(['message' => 'Token invalide ou expiré']);
+        }
+    } else {
+        http_response_code(401);
+        echo json_encode(['message' => 'Token manquant']);
+    }
+}
+----
+
+

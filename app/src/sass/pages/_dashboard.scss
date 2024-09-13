@@ -1,0 +1,15 @@
+@use "../abstracts/mixins";
+
+.dashboard-main {
+    flex-direction: column;
+    &__welcome-section {
+        @include mixins.flex-box(flex-start, flex-start, column);
+        padding: 10px;
+        h1 {
+            font-size: 30px;
+            margin-block: 10px;
+        }
+
+    }
+
+}
