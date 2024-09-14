@@ -1,5 +1,7 @@
 = La manipulation des réponses JSON et des en-têtes HTTP
-
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
 == Introduction
 

@@ -1,5 +1,7 @@
 = La conception d'une API RESTful 
-
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
 == Introduction
 

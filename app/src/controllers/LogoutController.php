@@ -16,6 +16,6 @@ class LogoutController extends BaseController {
     public function index() {
         $this->flushBrowser();
         $this->flushMemo($this->memoryDb);
-        return $this->render('login/index');
+        return $this->render('logout/index');
     }
 }

@@ -282,5 +282,36 @@ ul, li, p, h1, h2, h3, figure {
   font-size: 30px;
   margin-block: 10px;
 }
+.dashboard-main__actions-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.dashboard-main__actions-section > section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+.logout-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.logout-main > section {
+  width: 400px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+@media (0 <= width <= 435px) {
+  .logout-main > section {
+    width: 95%;
+  }
+}
 
 /*# sourceMappingURL=styles.css.map */

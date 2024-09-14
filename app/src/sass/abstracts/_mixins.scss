@@ -5,10 +5,14 @@
     flex-direction: $dir;
 }
 
-@mixin circular-figure($face: 40px) {
+@mixin circular-figure($face: 40px, $is-square: "false") {
     width: $face;
     height: $face;
-    border-radius: 50%;
+
+    @if #{$is-square} == "false" {
+        border-radius: 50%;
+    }
+
     overflow: hidden;
  
 }

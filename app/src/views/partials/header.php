@@ -4,6 +4,7 @@
             <img src="./images/logo.webp" alt="Logo de IT Creator">
         </figure>
         <span aria-label="Nom de l'application">IT Creator</span>
+
     </a>
     <nav>
         <ul>

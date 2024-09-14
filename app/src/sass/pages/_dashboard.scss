@@ -12,4 +12,11 @@
 
     }
 
+    &__actions-section {
+        @include mixins.flex-box(flex-start,flex-start, column);
+        & > section {
+            @include mixins.flex-box(space-between,center, row);   
+        }
+    }
+
 }

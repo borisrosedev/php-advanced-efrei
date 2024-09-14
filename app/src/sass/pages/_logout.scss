@@ -1,0 +1,12 @@
+@use "../abstracts/mixins";
+
+.logout-main {
+    @include mixins.flex-box(center, center, column);
+    & > section {
+        width: 400px;  
+        @include mixins.flex-box(flex-start, flex-start, column); 
+        @media (0 <= width <= 435px) {
+            width: 95%;
+        }
+    }
+}

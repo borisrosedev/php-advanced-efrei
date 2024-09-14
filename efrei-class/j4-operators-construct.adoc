@@ -1,5 +1,7 @@
 = Le NullSafe Operator et la Constructor Property Promotion 
-
+:revealjs_theme: beige
+:source-highlighter: highlight.js
+:icons: font
 
 == Introduction
 
